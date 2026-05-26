@@ -8,6 +8,22 @@ function isNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function isOptionalNumber(value: unknown) {
+  return value === undefined || isNumber(value);
+}
+
+function isOptionalString(value: unknown) {
+  return value === undefined || typeof value === "string";
+}
+
+function isNullableNumber(value: unknown) {
+  return value === null || isNumber(value);
+}
+
+function isNullableString(value: unknown) {
+  return value === null || typeof value === "string";
+}
+
 function isValidRequest(data: unknown): data is AiSummaryRequest {
   if (!data || typeof data !== "object") return false;
 
@@ -15,6 +31,8 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
   const market = input.marketData;
   const scoring = input.scoring;
   const defi = input.defiData;
+  const macro = input.macroData;
+  const onchain = input.onchainData;
 
   return Boolean(
     input.coin &&
@@ -42,7 +60,50 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
       Array.isArray(scoring.notes) &&
       defi &&
       typeof defi.sourceAvailable === "boolean" &&
-      typeof defi.label === "string",
+      typeof defi.label === "string" &&
+      macro &&
+      typeof macro.sourceAvailable === "boolean" &&
+      isOptionalNumber(macro.totalCryptoMarketCap) &&
+      isOptionalNumber(macro.totalCryptoVolume) &&
+      isOptionalNumber(macro.btcDominance) &&
+      isOptionalNumber(macro.ethDominance) &&
+      isOptionalNumber(macro.marketCapChange24h) &&
+      isOptionalNumber(macro.fearGreedValue) &&
+      isOptionalString(macro.fearGreedClassification) &&
+      isOptionalString(macro.fearGreedTimestamp) &&
+      ["Risk-on", "Neutral", "Risk-off", "Mixed", "Unavailable"].includes(
+        macro.regime,
+      ) &&
+      Array.isArray(macro.notes) &&
+      macro.notes.every((note) => typeof note === "string") &&
+      onchain &&
+      typeof onchain.sourceAvailable === "boolean" &&
+      onchain.provider === "coinmetrics" &&
+      typeof onchain.coinId === "string" &&
+      isNullableString(onchain.asset) &&
+      isNullableString(onchain.attemptedUrl) &&
+      isNullableNumber(onchain.upstreamStatus) &&
+      isNullableString(onchain.upstreamMessage) &&
+      Array.isArray(onchain.availableMetricsTried) &&
+      onchain.availableMetricsTried.every(
+        (metric) => typeof metric === "string",
+      ) &&
+      isNullableString(onchain.metricLabel) &&
+      isNullableString(onchain.time) &&
+      isNullableNumber(onchain.mvrv) &&
+      isNullableNumber(onchain.realizedCapUsd) &&
+      isNullableNumber(onchain.marketCapUsd) &&
+      [
+        "Undervalued/Capitulation Zone",
+        "Neutral",
+        "Elevated",
+        "Overheated",
+        "Unavailable",
+      ].includes(onchain.valuationState) &&
+      Array.isArray(onchain.notes) &&
+      onchain.notes.every((note) => typeof note === "string") &&
+      typeof onchain.message === "string" &&
+      typeof onchain.error === "boolean",
   );
 }
 
@@ -62,7 +123,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json<AiSummaryError>(
       {
         error: true,
-        message: "Please load current market and DeFi data before generating a summary.",
+        message:
+          "Please load current market, DeFi, and macro context before generating a summary.",
       },
       { status: 400 },
     );

@@ -45,6 +45,56 @@ export interface DefiFundamentalsData {
   error?: boolean;
 }
 
+export type MacroRegime =
+  | "Risk-on"
+  | "Neutral"
+  | "Risk-off"
+  | "Mixed"
+  | "Unavailable";
+
+export interface MacroSentimentData {
+  sourceAvailable: boolean;
+  totalCryptoMarketCap?: number;
+  totalCryptoVolume?: number;
+  btcDominance?: number;
+  ethDominance?: number;
+  marketCapChange24h?: number;
+  fearGreedValue?: number;
+  fearGreedClassification?: string;
+  fearGreedTimestamp?: string;
+  regime: MacroRegime;
+  notes: string[];
+  error?: boolean;
+  message?: string;
+}
+
+export type OnchainValuationState =
+  | "Undervalued/Capitulation Zone"
+  | "Neutral"
+  | "Elevated"
+  | "Overheated"
+  | "Unavailable";
+
+export interface OnchainValuationData {
+  sourceAvailable: boolean;
+  provider: "coinmetrics";
+  coinId: string;
+  asset: string | null;
+  attemptedUrl: string | null;
+  upstreamStatus: number | null;
+  upstreamMessage: string | null;
+  availableMetricsTried: string[];
+  metricLabel: string | null;
+  time: string | null;
+  mvrv: number | null;
+  realizedCapUsd: number | null;
+  marketCapUsd: number | null;
+  valuationState: OnchainValuationState;
+  notes: string[];
+  message: string;
+  error: boolean;
+}
+
 export interface AiSummaryRequest {
   coin: {
     id: string;
@@ -64,6 +114,8 @@ export interface AiSummaryRequest {
   };
   scoring: ScoringResult;
   defiData: DefiFundamentalsData;
+  macroData: MacroSentimentData;
+  onchainData: OnchainValuationData;
 }
 
 export interface AiSummaryResponse {

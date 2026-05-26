@@ -98,7 +98,7 @@ function getFailureDetail(status: number) {
   return "CoinGecko request failed.";
 }
 
-async function requestCoinGecko<T>(path: string): Promise<T> {
+export async function requestCoinGecko<T>(path: string): Promise<T> {
   const config = getCoinGeckoConfig();
   let response: Response;
 

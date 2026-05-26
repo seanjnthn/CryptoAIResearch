@@ -15,9 +15,19 @@ The marketData.volatility30d field is annualized 30-day realized volatility expr
 percentage. Discuss elevated volatility as a risk factor, or state when it is unavailable.
 Interpret volatility consistently: below 40% is relatively lower risk, 40% to 80% is
 moderate crypto volatility, above 80% to 120% is elevated, and above 120% is very high.
+The macroData field describes a broader market and sentiment backdrop. Discuss it only
+as context, note missing values, and never treat sentiment readings as trade instructions.
+The onchainData field describes MVRV valuation context when Coin Metrics data is
+available. MVRV compares market cap with realized cap. Treat simplified thresholds as
+long-cycle context only. If onchainData is unavailable because upstreamStatus is 403
+or its message states current Coin Metrics Community access is unavailable, say:
+"On-chain MVRV data is unavailable with the current provider access." Do not treat
+missing MVRV as bearish and do not infer or invent an MVRV value.
 
 Write a concise markdown research note using exactly these headings:
 ## Market Status
+## Macro & Sentiment Context
+## On-chain Valuation Context
 ## Bullish Factors
 ## Bearish / Risk Factors
 ## DeFi / Fundamental Context
@@ -30,6 +40,8 @@ Rules:
 - Do not use the words "buy", "sell", "guaranteed", "will pump", or "sure profit".
 - Do not predict exact future prices.
 - Treat the research score as support only, not as a standalone trading signal.
+- Treat macro and sentiment signals as context only, not as a standalone trading signal.
+- Do not state or imply that MVRV means to buy or sell; it is context only.
 - Keep the tone sober, analytical, concise, and non-hype.`;
 
 interface GeminiTextPart {

@@ -7,7 +7,9 @@ import type {
   AiSummaryRequest,
   AiSummaryResponse,
   DefiFundamentalsData,
+  MacroSentimentData,
   MarketData,
+  OnchainValuationData,
   ScoringResult,
   WatchlistCoin,
 } from "@/types/crypto";
@@ -17,6 +19,8 @@ interface AiSummaryProps {
   marketData: MarketData | null;
   scoring: ScoringResult | null;
   defiData: DefiFundamentalsData | null;
+  macroData: MacroSentimentData | null;
+  onchainData: OnchainValuationData | null;
   realizedVolatility: number | null;
   canGenerate: boolean;
 }
@@ -81,6 +85,8 @@ export default function AiSummary({
   marketData,
   scoring,
   defiData,
+  macroData,
+  onchainData,
   realizedVolatility,
   canGenerate,
 }: AiSummaryProps) {
@@ -99,7 +105,7 @@ export default function AiSummary({
   }, [coin.coinId]);
 
   async function handleGenerateSummary() {
-    if (!marketData || !scoring || !defiData || !canGenerate) {
+    if (!marketData || !scoring || !defiData || !macroData || !canGenerate) {
       return;
     }
 
@@ -124,6 +130,30 @@ export default function AiSummary({
       },
       scoring,
       defiData,
+      macroData,
+      onchainData:
+        onchainData ?? {
+          sourceAvailable: false,
+          provider: "coinmetrics",
+          coinId: coin.coinId,
+          asset: null,
+          attemptedUrl: null,
+          upstreamStatus: null,
+          upstreamMessage: null,
+          availableMetricsTried: [],
+          metricLabel: null,
+          time: null,
+          mvrv: null,
+          realizedCapUsd: null,
+          marketCapUsd: null,
+          valuationState: "Unavailable",
+          notes: [
+            "MVRV data has not loaded or is unavailable for this asset.",
+            "MVRV is cycle context only and is not a standalone trading signal.",
+          ],
+          message: "MVRV unavailable for this asset or data source.",
+          error: false,
+        },
     };
 
     latestRequestId.current = requestId;
@@ -184,7 +214,8 @@ export default function AiSummary({
       {!summary && !isLoading && (
         <p className="rounded-xl border border-cyan-400/10 bg-cyan-400/5 p-4 text-sm leading-6 text-slate-300">
           Click Generate AI Summary to create a structured research note based on the
-          current market, score, and DeFi data.
+          current market, score, DeFi, macro sentiment, and on-chain valuation
+          context.
         </p>
       )}
 
@@ -227,7 +258,8 @@ export default function AiSummary({
 
       {!canGenerate && !isLoading && (
         <p className="mt-3 text-xs text-slate-500">
-          Load the selected coin's market and DeFi data before generating a summary.
+          Load the selected coin's market, DeFi, and macro context before generating a
+          summary.
         </p>
       )}
 

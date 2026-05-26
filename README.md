@@ -1,6 +1,6 @@
 # Crypto AI Research Dashboard
 
-A beginner-friendly research assistant for reviewing crypto market context, DeFi fundamentals, transparent scoring, and an on-demand structured AI summary. It is not a trading bot, does not provide financial advice, and does not generate guaranteed predictions.
+A beginner-friendly research assistant for reviewing crypto market context, macro sentiment, on-chain valuation, DeFi fundamentals, transparent scoring, and an on-demand structured AI summary. It is not a trading bot, does not provide financial advice, and does not generate guaranteed predictions.
 
 ## Why I Built This
 
@@ -29,6 +29,8 @@ Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing
 - Review a transparent research score with explanatory categories and notes.
 - Read an in-app Methodology & User Guide explaining how the data and score should be interpreted.
 - Show DeFi total value locked (TVL) context where it is relevant and available.
+- Review broader macro and sentiment context using global crypto metrics and the Fear & Greed Index.
+- View optional On-chain Valuation / MVRV context where Coin Metrics coverage is available.
 - Generate an optional Gemini analyst summary from the currently displayed structured data only.
 - Preserve usable cached market data when CoinGecko is temporarily unavailable or rate limited.
 
@@ -40,6 +42,8 @@ not portfolio holdings, do not require an account, and do not sync across device
 - Full-stack Next.js dashboard.
 - Live crypto market data from CoinGecko.
 - DeFi fundamentals from DeFiLlama.
+- Macro and sentiment context from CoinGecko global data and Alternative.me Fear & Greed.
+- On-chain MVRV valuation context from Coin Metrics Community API when available.
 - Realized 30D volatility calculation.
 - Simplified research scoring model.
 - Gemini-powered AI summary based only on structured data.
@@ -56,8 +60,10 @@ not portfolio holdings, do not require an account, and do not sync across device
 
 ## Data Sources
 
-- **CoinGecko**: market snapshot and historical chart data.
+- **CoinGecko**: asset market snapshots, historical chart data, and global crypto market context.
 - **DeFiLlama**: chain TVL history used for DeFi fundamentals where applicable.
+- **Alternative.me**: current Crypto Fear & Greed Index sentiment context.
+- **Coin Metrics Community API**: MVRV, realized capitalization, and market capitalization where supported.
 - **Gemini API**: on-demand structured analyst summary.
 
 API keys are used only in server-side routes and are never sent to the browser.
@@ -76,9 +82,44 @@ The score is a research-support framework from 0 to 100:
 
 Missing DeFi fundamentals or insufficient volatility data are treated neutrally rather than as a negative signal.
 
+## Macro & Sentiment Context
+
+The macro panel is displayed separately from the numerical research score. It shows
+total crypto market capitalization, global 24-hour market-cap change, BTC dominance,
+and the current Alternative.me Crypto Fear & Greed reading.
+
+Its simple regime label uses transparent context rules: a strong broad-market decline
+or extreme fear can indicate a risk-off backdrop, a strong broad-market rise with
+non-extreme sentiment can indicate risk-on context, and conflicting signals are
+classified as mixed. These labels provide context only; fear is not an instruction to
+buy, and greed is not an instruction to sell.
+
+## On-chain Valuation / MVRV
+
+The on-chain valuation panel displays MVRV when Coin Metrics Community API coverage
+is available, starting with BTC and ETH as the primary MVP assets. MVRV compares
+market capitalization with realized capitalization and can describe an unrealized
+profit/loss backdrop across a broader market cycle.
+
+MVRV requires realized-cap data. The Community API may return an unavailable result
+for metrics that require expanded or paid provider access. The dashboard treats that
+outcome as an optional-data limitation, not a negative view of the selected asset.
+
+The dashboard uses simplified contextual labels:
+
+| MVRV | Valuation context |
+| ---: | --- |
+| Below 1.0 | Undervalued/Capitulation Zone |
+| 1.0 to below 2.0 | Neutral |
+| 2.0 to below 3.5 | Elevated |
+| 3.5 or above | Overheated |
+
+These categories are cycle context only. They do not predict future price movement
+and are not a standalone trading signal.
+
 ## AI Summary
 
-The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, research score, realized volatility, and available DeFi context. It does not receive chart history and is instructed to use no external narratives or unsupported facts.
+The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, research score, realized volatility, available DeFi context, displayed macro/sentiment context, and available MVRV context. It does not receive chart history and is instructed to use no external narratives or unsupported facts.
 
 The output is intended as a concise structured data summary and is not a standalone trading signal. Gemini is prompted to avoid external narratives, unsupported facts, financial advice, exact price predictions, or recommendation language.
 
@@ -87,6 +128,8 @@ The output is intended as a concise structured data summary and is not a standal
 - **Next.js App Router:** keeps pages and server-side API routes in one readable full-stack project structure.
 - **Server-side API requests:** keeps CoinGecko and Gemini credentials out of browser code and centralizes provider error handling.
 - **Structured JSON for Gemini:** restricts the summary to data already visible in the dashboard and reduces unsupported narrative generation.
+- **Separate macro context panel:** keeps sentiment as an explanatory backdrop instead of folding it into a buy/sell-style score.
+- **Separate MVRV panel:** presents on-chain valuation as long-cycle context without changing the simplified research score.
 - **Research-support scoring:** makes the methodology explainable while avoiding recommendation or financial-advice framing.
 - **No funding-rate module in this MVP:** an earlier Binance funding experiment was intentionally removed because local network/DNS reliability made that data source unsuitable for a stable portfolio demo.
 
@@ -128,6 +171,10 @@ npm.cmd run build
 - Research scores are simplified and educational; they are not decision signals.
 - CoinGecko and Gemini free tiers may apply rate limits that temporarily affect individual cards.
 - DeFi metrics may not apply to every supported asset.
+- Fear & Greed and global market metrics provide contextual snapshots and can be noisy or incomplete.
+- MVRV availability depends on data provider coverage and access level because it requires realized-cap data.
+- The app gracefully handles unavailable MVRV data, and missing MVRV is not treated as bearish.
+- Simplified MVRV thresholds describe possible cycle context, not short-term timing.
 - Volatility is calculated from the available 30-day historical price window and is one risk context measure only.
 - AI output is limited to the structured dashboard inputs and can still require human review.
 - The AI endpoint is appropriate for local MVP use; add server-side abuse protection before any public hosting.
@@ -159,8 +206,10 @@ This project is an AI-assisted crypto research dashboard built to combine market
 
 - Portfolio tracking.
 - More robust scoring methodology.
-- News and sentiment module.
+- News headline context module.
 - Additional on-chain metrics.
+- Optional paid on-chain data provider support for MVRV.
+- Glassnode, Santiment, or Coin Metrics Pro integration for expanded valuation context.
 - Historical score tracking.
 - Expanded asset research context for additional ecosystems.
 - Better charting and visual comparison tools.

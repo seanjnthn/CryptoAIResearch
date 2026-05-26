@@ -7,6 +7,8 @@ import {
   BrainCircuit,
   Database,
   Gauge,
+  Globe2,
+  Scale,
   ShieldAlert,
   Waves,
 } from "lucide-react";
@@ -124,7 +126,7 @@ export default function MethodologyPage() {
           <GuideCard
             label="Purpose"
             title="What This Dashboard Does"
-            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, volatility analytics, a simplified research score, and an optional AI-generated summary."
+            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, macro sentiment context, on-chain valuation context, volatility analytics, a simplified research score, and an optional AI-generated summary."
             icon={<Gauge className="h-5 w-5" />}
             className="md:col-span-2"
           >
@@ -201,9 +203,42 @@ export default function MethodologyPage() {
           />
 
           <GuideCard
+            label="Macro & Sentiment Context"
+            title="Broader Risk Backdrop"
+            description="CoinGecko global totals describe total crypto market capitalization, overall trading volume, and BTC dominance. Alternative.me Fear & Greed provides a current sentiment reading. Together, they add context about the broader market backdrop rather than a prediction."
+            icon={<Globe2 className="h-5 w-5" />}
+          >
+            <BulletList
+              items={[
+                "BTC dominance describes Bitcoin's share of the reported total crypto market capitalization.",
+                "Total crypto market cap and its 24h change help describe broad market direction.",
+                "Fear & Greed is a sentiment indicator; fear does not mean buy and greed does not mean sell.",
+                "Sentiment measures can be noisy, delayed, or incomplete, so they should be reviewed alongside other context.",
+              ]}
+            />
+          </GuideCard>
+
+          <GuideCard
+            label="On-chain Valuation / MVRV"
+            title="Cycle Context Where Available"
+            description="MVRV compares market capitalization with realized capitalization. It can help describe the unrealized profit or loss backdrop for holders, but realized-cap and MVRV metrics may require paid or expanded data provider access."
+            icon={<Scale className="h-5 w-5" />}
+          >
+            <BulletList
+              items={[
+                "MVRV below 1 can indicate broad holder losses or capitulation context.",
+                "Higher MVRV can indicate more unrealized profit and possible distribution risk.",
+                "Unavailable MVRV is normal for many assets or provider access levels and does not mean an asset is bad.",
+                "The dashboard thresholds are simplified and are more useful for long-cycle context than short-term timing.",
+                "This panel is context only. MVRV is not a buy/sell signal and should not be interpreted in isolation.",
+              ]}
+            />
+          </GuideCard>
+
+          <GuideCard
             label="AI Analyst Summary"
             title="Structured Gemini Analysis"
-            description="The optional AI summary uses Gemini API and receives only structured data already shown by the dashboard. It is instructed not to use external news or knowledge and not to make price predictions."
+            description="The optional AI summary uses Gemini API and receives only structured market, score, DeFi, macro, and on-chain valuation context already shown by the dashboard. It is instructed not to use external news or knowledge and not to make price predictions."
             icon={<BrainCircuit className="h-5 w-5" />}
           >
             <BulletList
@@ -226,6 +261,8 @@ export default function MethodologyPage() {
                 "The score methodology is simplified for education and portfolio demonstration.",
                 "AI output may be incomplete or incorrect.",
                 "DeFi metrics do not apply equally to all assets.",
+                "Sentiment indicators describe a backdrop and do not determine future market behavior.",
+                "MVRV data may be unavailable and its simplified thresholds do not time short-term market moves.",
                 "This dashboard is not financial advice or a trading system.",
               ]}
             />

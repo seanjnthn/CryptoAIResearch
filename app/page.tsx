@@ -6,7 +6,9 @@ import { LoaderCircle, ShieldAlert, TriangleAlert } from "lucide-react";
 import AiSummary from "@/components/AiSummary";
 import CoinSelector from "@/components/CoinSelector";
 import DefiFundamentals from "@/components/DefiFundamentals";
+import MacroSentimentPanel from "@/components/MacroSentimentPanel";
 import MarketSnapshot from "@/components/MarketSnapshot";
+import OnchainValuation from "@/components/OnchainValuation";
 import PriceChart from "@/components/PriceChart";
 import ScoreCard from "@/components/ScoreCard";
 import { calculateRealizedVolatility } from "@/lib/analytics";
@@ -18,8 +20,10 @@ import {
 } from "@/lib/watchlist";
 import type {
   DefiFundamentalsData,
+  MacroSentimentData,
   MarketApiError,
   MarketApiResponse,
+  OnchainValuationData,
   WatchlistCoin,
 } from "@/types/crypto";
 
@@ -60,9 +64,16 @@ export default function Home() {
   const [warning, setWarning] = useState<string | null>(null);
   const [defiData, setDefiData] = useState<DefiFundamentalsData | null>(null);
   const [isDefiLoading, setIsDefiLoading] = useState(true);
+  const [macroData, setMacroData] = useState<MacroSentimentData | null>(null);
+  const [isMacroLoading, setIsMacroLoading] = useState(true);
+  const [onchainData, setOnchainData] = useState<OnchainValuationData | null>(
+    null,
+  );
+  const [isOnchainLoading, setIsOnchainLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const latestRequestId = useRef(0);
   const latestDefiRequestId = useRef(0);
+  const latestOnchainRequestId = useRef(0);
   const allCoins = useMemo(
     () => [...defaultWatchlist, ...customCoins],
     [customCoins],
@@ -225,6 +236,8 @@ export default function Home() {
     );
 
     if (selectedCoinId === coinId) {
+      setOnchainData(null);
+      setIsOnchainLoading(true);
       setSelectedCoinId(DEFAULT_COIN_ID);
     }
 
@@ -340,6 +353,100 @@ export default function Home() {
     return () => controller.abort();
   }, [coin.coinId]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    const requestId = latestOnchainRequestId.current + 1;
+
+    latestOnchainRequestId.current = requestId;
+
+    async function fetchOnchainValuation() {
+      setIsOnchainLoading(true);
+      setOnchainData(null);
+
+      try {
+        const response = await fetch(`/api/onchain?coinId=${coin.coinId}`, {
+          signal: controller.signal,
+        });
+        const data = (await response.json()) as OnchainValuationData;
+
+        if (controller.signal.aborted || requestId !== latestOnchainRequestId.current) {
+          return;
+        }
+
+        setOnchainData(data);
+      } catch {
+        if (controller.signal.aborted || requestId !== latestOnchainRequestId.current) {
+          return;
+        }
+
+        setOnchainData({
+          sourceAvailable: false,
+          provider: "coinmetrics",
+          coinId: coin.coinId,
+          asset: null,
+          attemptedUrl: null,
+          upstreamStatus: null,
+          upstreamMessage: "On-chain valuation request failed.",
+          availableMetricsTried: [],
+          metricLabel: null,
+          time: null,
+          mvrv: null,
+          realizedCapUsd: null,
+          marketCapUsd: null,
+          valuationState: "Unavailable",
+          notes: ["MVRV is cycle context only and is not a standalone trading signal."],
+          message: "MVRV unavailable for this asset or data source.",
+          error: true,
+        });
+      } finally {
+        if (!controller.signal.aborted && requestId === latestOnchainRequestId.current) {
+          setIsOnchainLoading(false);
+        }
+      }
+    }
+
+    fetchOnchainValuation();
+
+    return () => controller.abort();
+  }, [coin.coinId]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchMacroContext() {
+      setIsMacroLoading(true);
+
+      try {
+        const response = await fetch("/api/macro", {
+          signal: controller.signal,
+        });
+        const data = (await response.json()) as MacroSentimentData;
+
+        if (!controller.signal.aborted) {
+          setMacroData(data);
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setMacroData({
+            sourceAvailable: false,
+            regime: "Unavailable",
+            notes: ["Macro and sentiment context is temporarily unavailable."],
+            message: "Macro and sentiment context is temporarily unavailable.",
+            error: true,
+          });
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsMacroLoading(false);
+        }
+      }
+    }
+
+    fetchMacroContext();
+
+    return () => controller.abort();
+  }, []);
+
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#12253a_0%,_#070b14_43%)] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -351,11 +458,12 @@ export default function Home() {
             Crypto AI Research Dashboard
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
-            Review live market context, realized volatility, DeFi fundamentals, and
-            on-demand structured AI summaries in one focused workspace.
+            Review live market context, macro sentiment, on-chain valuation, realized
+            volatility, DeFi fundamentals, and on-demand structured AI summaries in one
+            focused workspace.
           </p>
           <div className="mt-6 flex flex-wrap gap-2 text-xs font-medium text-slate-400">
-            {["CoinGecko market data", "DeFiLlama TVL context", "Gemini structured summary"].map(
+            {["CoinGecko market data", "DeFiLlama TVL context", "Macro sentiment backdrop", "Coin Metrics MVRV context", "Gemini structured summary"].map(
               (source) => (
                 <span key={source} className="rounded-full border border-slate-800 bg-slate-900/70 px-3 py-1.5">
                   {source}
@@ -404,6 +512,8 @@ export default function Home() {
             selectedCoinId={coin.coinId}
             onSelectCoin={(nextCoinId) => {
               if (nextCoinId !== coin.coinId) {
+                setOnchainData(null);
+                setIsOnchainLoading(true);
                 setSelectedCoinId(nextCoinId);
               }
             }}
@@ -499,6 +609,8 @@ export default function Home() {
             </section>
           )}
 
+          <MacroSentimentPanel data={macroData} isLoading={isMacroLoading} />
+
           {marketData && researchScore && (
             <>
               <MarketSnapshot market={marketData.market} />
@@ -508,19 +620,30 @@ export default function Home() {
           )}
 
           <DefiFundamentals data={defiData} isLoading={isDefiLoading} />
+          <OnchainValuation data={onchainData} isLoading={isOnchainLoading} />
           <AiSummary
             coin={coin}
             marketData={currentMarket}
             scoring={currentMarket ? researchScore : null}
             defiData={defiData}
+            macroData={macroData}
+            onchainData={onchainData}
             realizedVolatility={currentMarket ? realizedVolatility : null}
-            canGenerate={Boolean(currentMarket && researchScore && defiData && !isDefiLoading)}
+            canGenerate={Boolean(
+              currentMarket &&
+                researchScore &&
+                defiData &&
+                macroData &&
+                !isDefiLoading &&
+                !isMacroLoading,
+            )}
           />
         </div>
 
         <footer className="pt-10 text-center text-xs leading-6 text-slate-500">
-          Market and chart data from CoinGecko. DeFi TVL data from DeFiLlama. AI summaries
-          generate on demand from available structured data. Research assistant only.
+          Market and chart data from CoinGecko. DeFi TVL data from DeFiLlama.
+          Sentiment context from Alternative.me. MVRV context from Coin Metrics.
+          AI summaries generate on demand from available structured data. Research assistant only.
         </footer>
       </div>
     </main>
