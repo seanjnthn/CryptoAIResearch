@@ -2,7 +2,22 @@
 
 A beginner-friendly research assistant for reviewing crypto market context, DeFi fundamentals, transparent scoring, and an on-demand structured AI summary. It is not a trading bot, does not provide financial advice, and does not generate guaranteed predictions.
 
-## Features
+## Why I Built This
+
+Crypto research often requires checking price behavior, liquidity, risk, and available fundamentals across separate sources. I built this dashboard to bring those inputs into one focused interface while practicing a full-stack Next.js workflow with server-side API access, calculation-driven UI, and constrained AI output.
+
+The project demonstrates how structured data can support research without turning a dashboard into a recommendation engine or automated trading system.
+
+## Demo
+
+- **Live demo:** [https://YOUR-VERCEL-DOMAIN.vercel.app](https://YOUR-VERCEL-DOMAIN.vercel.app)
+- **Screenshot path:** `public/screenshot-dashboard.png`
+
+Add a dashboard screenshot to `public/screenshot-dashboard.png` before sharing the repository widely. Once added, it can be displayed here:
+
+![Crypto AI Research Dashboard screenshot](./public/screenshot-dashboard.png)
+
+## Core Features
 
 - Select a watchlist asset: BTC, ETH, SOL, SUI, HYPE, TAO, or XRP.
 - View current price, market capitalization, volume, all-time-high context, and a 30-day chart.
@@ -28,7 +43,7 @@ A beginner-friendly research assistant for reviewing crypto market context, DeFi
 
 API keys are used only in server-side routes and are never sent to the browser.
 
-## Research Score
+## Research Score Methodology
 
 The score is a research-support framework from 0 to 100:
 
@@ -46,7 +61,7 @@ Missing DeFi fundamentals or insufficient volatility data are treated neutrally 
 
 The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, research score, realized volatility, and available DeFi context. It does not receive chart history and is instructed to use no external narratives or unsupported facts.
 
-The output is intended as a concise structured data summary and is not a standalone trading signal.
+The output is intended as a concise structured data summary and is not a standalone trading signal. Gemini is prompted to avoid external narratives, unsupported facts, financial advice, exact price predictions, or recommendation language.
 
 ## Setup
 
@@ -95,11 +110,26 @@ npm.cmd run build
 
 This project is a research assistant only. Its research score is simplified and educational. It does not provide financial advice, generate guaranteed predictions, or act as a standalone trading signal.
 
+## What I Learned
+
+- Building a full-stack Next.js application with the App Router and TypeScript.
+- Creating API routes that keep third-party API keys on the server.
+- Fetching and normalizing market data from CoinGecko and DeFi metrics from DeFiLlama.
+- Calculating annualized realized volatility from historical daily closing prices.
+- Designing a simplified, explainable research scoring methodology.
+- Using Gemini only with structured app data to reduce hallucination risk.
+- Handling API rate limits, unavailable metrics, cached fallback data, and isolated UI errors gracefully.
+
 ## Future Roadmap
 
-- Improve test coverage for analytics and scoring behavior.
-- Add richer explanatory visualizations derived from existing structured inputs.
-- Refine accessibility, responsive layout, and portfolio presentation.
+- Portfolio tracking.
+- More robust scoring methodology.
+- News and sentiment module.
+- Additional on-chain metrics.
+- Historical score tracking.
+- User-defined watchlists.
+- Better charting and visual comparison tools.
+- Backtesting research score behavior for analysis only.
 
 ## Local Test Checklist
 
