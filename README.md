@@ -26,6 +26,7 @@ Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing
 - View current price, market capitalization, volume, all-time-high context, and a 30-day chart.
 - Calculate annualized 30-day realized volatility from historical daily closing prices.
 - Review a transparent research score with explanatory categories and notes.
+- Read an in-app Methodology & User Guide explaining how the data and score should be interpreted.
 - Show DeFi total value locked (TVL) context where it is relevant and available.
 - Generate an optional Gemini analyst summary from the currently displayed structured data only.
 - Preserve usable cached market data when CoinGecko is temporarily unavailable or rate limited.
