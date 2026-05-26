@@ -23,6 +23,7 @@ Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing
 ## Core Features
 
 - Select a watchlist asset: BTC, ETH, SOL, SUI, HYPE, TAO, or XRP.
+- Add custom watchlist assets by CoinGecko coin ID, stored locally in the browser without login.
 - View current price, market capitalization, volume, all-time-high context, and a 30-day chart.
 - Calculate annualized 30-day realized volatility from historical daily closing prices.
 - Review a transparent research score with explanatory categories and notes.
@@ -30,6 +31,9 @@ Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing
 - Show DeFi total value locked (TVL) context where it is relevant and available.
 - Generate an optional Gemini analyst summary from the currently displayed structured data only.
 - Preserve usable cached market data when CoinGecko is temporarily unavailable or rate limited.
+
+Custom watchlist entries are saved in the browser using `localStorage`. They are
+not portfolio holdings, do not require an account, and do not sync across devices.
 
 ## Project Highlights
 
@@ -158,7 +162,7 @@ This project is an AI-assisted crypto research dashboard built to combine market
 - News and sentiment module.
 - Additional on-chain metrics.
 - Historical score tracking.
-- User-defined watchlists.
+- Expanded asset research context for additional ecosystems.
 - Better charting and visual comparison tools.
 - Backtesting research score behavior for analysis only.
 

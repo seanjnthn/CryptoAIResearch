@@ -1,5 +1,3 @@
-export type CoinSymbol = "BTC" | "ETH" | "SOL" | "SUI" | "HYPE" | "TAO" | "XRP";
-
 export interface HistoricalChartPoint {
   date: string;
   price: number;
@@ -50,7 +48,7 @@ export interface DefiFundamentalsData {
 export interface AiSummaryRequest {
   coin: {
     id: string;
-    symbol: CoinSymbol;
+    symbol: string;
     name: string;
   };
   marketData: {
@@ -111,6 +109,7 @@ export interface ScoringResult {
 
 export interface WatchlistCoin {
   coinId: string;
-  symbol: CoinSymbol;
+  symbol: string;
   name: string;
+  isCustom?: boolean;
 }

@@ -131,6 +131,8 @@ export default function MethodologyPage() {
             <BulletList
               items={[
                 "Use it to organize structured information and compare context across the selected assets.",
+                "You can add custom assets locally by entering a CoinGecko coin ID, such as chainlink or aave.",
+                "Custom assets without a supported DeFiLlama mapping will show neutral unavailable fundamentals.",
                 "Treat the score and AI summary as educational research support, not an instruction to trade.",
               ]}
             />

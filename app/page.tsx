@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { LoaderCircle, ShieldAlert, TriangleAlert } from "lucide-react";
 import AiSummary from "@/components/AiSummary";
@@ -11,12 +11,16 @@ import PriceChart from "@/components/PriceChart";
 import ScoreCard from "@/components/ScoreCard";
 import { calculateRealizedVolatility } from "@/lib/analytics";
 import { calculateResearchScore } from "@/lib/scoring";
-import { coins, watchlist } from "@/lib/watchlist";
+import {
+  CUSTOM_WATCHLIST_STORAGE_KEY,
+  DEFAULT_COIN_ID,
+  defaultWatchlist,
+} from "@/lib/watchlist";
 import type {
-  CoinSymbol,
   DefiFundamentalsData,
   MarketApiError,
   MarketApiResponse,
+  WatchlistCoin,
 } from "@/types/crypto";
 
 function isMarketApiError(
@@ -25,8 +29,31 @@ function isMarketApiError(
   return "error" in data && data.error === true;
 }
 
+function isStoredCustomCoin(value: unknown): value is WatchlistCoin {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const coin = value as Partial<WatchlistCoin>;
+
+  return (
+    typeof coin.coinId === "string" &&
+    /^[a-z0-9-]+$/.test(coin.coinId) &&
+    typeof coin.symbol === "string" &&
+    coin.symbol.length > 0 &&
+    typeof coin.name === "string" &&
+    coin.name.length > 0
+  );
+}
+
 export default function Home() {
-  const [selectedCoin, setSelectedCoin] = useState<CoinSymbol>("BTC");
+  const [selectedCoinId, setSelectedCoinId] = useState(DEFAULT_COIN_ID);
+  const [customCoins, setCustomCoins] = useState<WatchlistCoin[]>([]);
+  const [hasLoadedCustomCoins, setHasLoadedCustomCoins] = useState(false);
+  const [customCoinInput, setCustomCoinInput] = useState("");
+  const [customCoinMessage, setCustomCoinMessage] = useState<string | null>(null);
+  const [customCoinError, setCustomCoinError] = useState<string | null>(null);
+  const [isAddingCoin, setIsAddingCoin] = useState(false);
   const [marketData, setMarketData] = useState<MarketApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<MarketApiError | null>(null);
@@ -36,7 +63,13 @@ export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
   const latestRequestId = useRef(0);
   const latestDefiRequestId = useRef(0);
-  const coin = watchlist[selectedCoin];
+  const allCoins = useMemo(
+    () => [...defaultWatchlist, ...customCoins],
+    [customCoins],
+  );
+  const coin =
+    allCoins.find((watchlistCoin) => watchlistCoin.coinId === selectedCoinId) ??
+    defaultWatchlist[0];
   const currentMarket =
     marketData?.market.id === coin.coinId ? marketData.market : null;
   const realizedVolatility = useMemo(
@@ -73,6 +106,135 @@ export default function Home() {
           : score.notes,
     };
   }, [coin.coinId, defiData, marketData, realizedVolatility]);
+
+  useEffect(() => {
+    const defaultCoinIds = new Set(defaultWatchlist.map((watchlistCoin) => watchlistCoin.coinId));
+
+    try {
+      const savedCoins = JSON.parse(
+        window.localStorage.getItem(CUSTOM_WATCHLIST_STORAGE_KEY) ?? "[]",
+      ) as unknown;
+      const uniqueIds = new Set<string>();
+      const storedCoins = Array.isArray(savedCoins)
+        ? savedCoins
+            .filter(isStoredCustomCoin)
+            .filter((savedCoin) => !defaultCoinIds.has(savedCoin.coinId))
+            .filter((savedCoin) => {
+              if (uniqueIds.has(savedCoin.coinId)) {
+                return false;
+              }
+
+              uniqueIds.add(savedCoin.coinId);
+              return true;
+            })
+            .map((savedCoin) => ({ ...savedCoin, isCustom: true }))
+        : [];
+
+      setCustomCoins(storedCoins);
+    } catch {
+      window.localStorage.removeItem(CUSTOM_WATCHLIST_STORAGE_KEY);
+    } finally {
+      setHasLoadedCustomCoins(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoadedCustomCoins) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(
+        CUSTOM_WATCHLIST_STORAGE_KEY,
+        JSON.stringify(
+          customCoins.map(({ coinId, symbol, name }) => ({ coinId, symbol, name })),
+        ),
+      );
+    } catch {
+      setCustomCoinError("Unable to save custom coins in this browser.");
+    }
+  }, [customCoins, hasLoadedCustomCoins]);
+
+  async function handleAddCustomCoin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const requestedCoinId = customCoinInput.trim().toLowerCase();
+
+    setCustomCoinError(null);
+    setCustomCoinMessage(null);
+
+    if (!requestedCoinId || !/^[a-z0-9-]+$/.test(requestedCoinId)) {
+      setCustomCoinError("Coin not found. Please check the CoinGecko ID.");
+      return;
+    }
+
+    if (allCoins.some((watchlistCoin) => watchlistCoin.coinId === requestedCoinId)) {
+      setCustomCoinMessage("This coin is already in your watchlist.");
+      return;
+    }
+
+    setIsAddingCoin(true);
+
+    try {
+      const response = await fetch(
+        `/api/market?coinId=${encodeURIComponent(requestedCoinId)}&days=30`,
+      );
+      const data = (await response.json()) as MarketApiResponse | MarketApiError;
+
+      if (!response.ok || isMarketApiError(data)) {
+        if (response.status === 404) {
+          setCustomCoinError("Coin not found. Please check the CoinGecko ID.");
+        } else {
+          setCustomCoinError(
+            "Unable to validate this coin right now. Please try again shortly.",
+          );
+        }
+        return;
+      }
+
+      if (allCoins.some((watchlistCoin) => watchlistCoin.coinId === data.market.id)) {
+        setCustomCoinMessage("This coin is already in your watchlist.");
+        return;
+      }
+
+      setCustomCoins((currentCoins) => [
+        ...currentCoins,
+        {
+          coinId: data.market.id,
+          symbol: data.market.symbol,
+          name: data.market.name,
+          isCustom: true,
+        },
+      ]);
+      setCustomCoinInput("");
+      setCustomCoinMessage(`${data.market.name} added to your local watchlist.`);
+    } catch {
+      setCustomCoinError(
+        "Unable to validate this coin right now. Please try again shortly.",
+      );
+    } finally {
+      setIsAddingCoin(false);
+    }
+  }
+
+  function handleRemoveCustomCoin(coinId: string) {
+    const removedCoin = customCoins.find((customCoin) => customCoin.coinId === coinId);
+
+    setCustomCoins((currentCoins) =>
+      currentCoins.filter((customCoin) => customCoin.coinId !== coinId),
+    );
+
+    if (selectedCoinId === coinId) {
+      setSelectedCoinId(DEFAULT_COIN_ID);
+    }
+
+    setCustomCoinError(null);
+    setCustomCoinMessage(
+      removedCoin
+        ? `${removedCoin.name} removed from your local watchlist.`
+        : "Custom coin removed from your local watchlist.",
+    );
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -238,14 +400,53 @@ export default function Home() {
             </button>
           </div>
           <CoinSelector
-            coins={coins}
-            selectedCoin={selectedCoin}
-            onSelectCoin={(nextCoin) => {
-              if (nextCoin !== selectedCoin) {
-                setSelectedCoin(nextCoin);
+            coins={allCoins}
+            selectedCoinId={coin.coinId}
+            onSelectCoin={(nextCoinId) => {
+              if (nextCoinId !== coin.coinId) {
+                setSelectedCoinId(nextCoinId);
               }
             }}
+            onRemoveCoin={handleRemoveCustomCoin}
           />
+          <div className="mt-6 border-t border-slate-800 pt-5">
+            <h3 className="text-sm font-semibold text-slate-100">Add custom coin</h3>
+            <p className="mt-1 text-xs leading-5 text-slate-400">
+              Use the CoinGecko coin ID, not ticker symbol. For example: chainlink,
+              aave, or render-token.
+            </p>
+            <form
+              onSubmit={handleAddCustomCoin}
+              className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start"
+            >
+              <label htmlFor="custom-coin-id" className="sr-only">
+                CoinGecko coin ID
+              </label>
+              <input
+                id="custom-coin-id"
+                type="text"
+                value={customCoinInput}
+                onChange={(event) => setCustomCoinInput(event.target.value)}
+                placeholder="chainlink"
+                disabled={isAddingCoin}
+                className="w-full rounded-xl border border-slate-700 bg-slate-950/50 px-4 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-cyan-400 sm:max-w-xs disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              <button
+                type="submit"
+                disabled={isAddingCoin}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-400/15 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isAddingCoin && <LoaderCircle className="animate-spin" size={16} />}
+                {isAddingCoin ? "Checking..." : "Add Coin"}
+              </button>
+            </form>
+            {customCoinMessage && (
+              <p className="mt-3 text-sm text-emerald-300">{customCoinMessage}</p>
+            )}
+            {customCoinError && (
+              <p className="mt-3 text-sm text-rose-300">{customCoinError}</p>
+            )}
+          </div>
         </section>
 
         <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
