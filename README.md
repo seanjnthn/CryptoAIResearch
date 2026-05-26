@@ -10,12 +10,15 @@ The project demonstrates how structured data can support research without turnin
 
 ## Demo
 
-- **Live demo:** [https://YOUR-VERCEL-DOMAIN.vercel.app](https://YOUR-VERCEL-DOMAIN.vercel.app)
-- **Screenshot path:** `public/screenshot-dashboard.png`
+**Live Demo:** [https://REPLACE_WITH_YOUR_VERCEL_DOMAIN.vercel.app](https://REPLACE_WITH_YOUR_VERCEL_DOMAIN.vercel.app)
 
-Add a dashboard screenshot to `public/screenshot-dashboard.png` before sharing the repository widely. Once added, it can be displayed here:
+Replace the placeholder demo URL with your actual Vercel deployment URL.
 
-![Crypto AI Research Dashboard screenshot](./public/screenshot-dashboard.png)
+**Screenshot**
+
+Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing the repository widely.
+
+![Crypto AI Research Dashboard Screenshot](./public/screenshot-dashboard.png)
 
 ## Core Features
 
@@ -26,6 +29,17 @@ Add a dashboard screenshot to `public/screenshot-dashboard.png` before sharing t
 - Show DeFi total value locked (TVL) context where it is relevant and available.
 - Generate an optional Gemini analyst summary from the currently displayed structured data only.
 - Preserve usable cached market data when CoinGecko is temporarily unavailable or rate limited.
+
+## Project Highlights
+
+- Full-stack Next.js dashboard.
+- Live crypto market data from CoinGecko.
+- DeFi fundamentals from DeFiLlama.
+- Realized 30D volatility calculation.
+- Simplified research scoring model.
+- Gemini-powered AI summary based only on structured data.
+- API key handling through environment variables.
+- Graceful error handling for external API failures.
 
 ## Tech Stack
 
@@ -62,6 +76,14 @@ Missing DeFi fundamentals or insufficient volatility data are treated neutrally 
 The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, research score, realized volatility, and available DeFi context. It does not receive chart history and is instructed to use no external narratives or unsupported facts.
 
 The output is intended as a concise structured data summary and is not a standalone trading signal. Gemini is prompted to avoid external narratives, unsupported facts, financial advice, exact price predictions, or recommendation language.
+
+## Technical Decisions
+
+- **Next.js App Router:** keeps pages and server-side API routes in one readable full-stack project structure.
+- **Server-side API requests:** keeps CoinGecko and Gemini credentials out of browser code and centralizes provider error handling.
+- **Structured JSON for Gemini:** restricts the summary to data already visible in the dashboard and reduces unsupported narrative generation.
+- **Research-support scoring:** makes the methodology explainable while avoiding recommendation or financial-advice framing.
+- **No funding-rate module in this MVP:** an earlier Binance funding experiment was intentionally removed because local network/DNS reliability made that data source unsuitable for a stable portfolio demo.
 
 ## Setup
 
@@ -119,6 +141,14 @@ This project is a research assistant only. Its research score is simplified and 
 - Designing a simplified, explainable research scoring methodology.
 - Using Gemini only with structured app data to reduce hallucination risk.
 - Handling API rate limits, unavailable metrics, cached fallback data, and isolated UI errors gracefully.
+
+## How to Present This Project
+
+This project is an AI-assisted crypto research dashboard built to combine market data, DeFi fundamentals, volatility analytics, and structured AI summaries into one research workspace. It does not provide trading signals or financial advice. Instead, it demonstrates how external data APIs, scoring logic, and AI can be combined safely for decision-support workflows.
+
+**Short description for GitHub About or LinkedIn:**
+
+> AI-assisted crypto research dashboard using Next.js, CoinGecko, DeFiLlama, Gemini API, and a simplified research scoring engine.
 
 ## Future Roadmap
 

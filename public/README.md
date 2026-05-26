@@ -1,7 +1,5 @@
 # Screenshot Placeholder
 
-Place a portfolio screenshot of the dashboard at:
+Place the dashboard screenshot here as `screenshot-dashboard.png`.
 
-`public/screenshot-dashboard.png`
-
-The main project README is already prepared to display that image.
+The main project README will display it from `public/screenshot-dashboard.png`.
