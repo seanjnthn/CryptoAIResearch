@@ -8,6 +8,7 @@ import {
   Database,
   Gauge,
   Globe2,
+  Newspaper,
   Scale,
   ShieldAlert,
   Waves,
@@ -22,7 +23,7 @@ interface GuideCardProps {
   className?: string;
 }
 
-const scoreCategories = [
+const marketScoreCategories = [
   {
     name: "Trend",
     explanation: "Recent price momentum across the available time windows.",
@@ -42,6 +43,25 @@ const scoreCategories = [
   {
     name: "Fundamental",
     explanation: "DeFi TVL trend when relevant data is available.",
+  },
+];
+
+const contextScoreCategories = [
+  {
+    name: "Macro",
+    explanation: "Broad crypto market regime from global market data.",
+  },
+  {
+    name: "Fear & Greed",
+    explanation: "Sentiment backdrop where extremes are treated cautiously.",
+  },
+  {
+    name: "News",
+    explanation: "Recent headline sentiment using a transparent keyword heuristic.",
+  },
+  {
+    name: "On-chain",
+    explanation: "MVRV valuation context when provider data is available.",
   },
 ];
 
@@ -108,7 +128,7 @@ export default function MethodologyPage() {
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
             Learn what each part of the dashboard measures, how to interpret
-            the research score, and which limitations matter before using its
+            Research Score v2, and which limitations matter before using its
             output as market context.
           </p>
         </header>
@@ -126,7 +146,7 @@ export default function MethodologyPage() {
           <GuideCard
             label="Purpose"
             title="What This Dashboard Does"
-            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, macro sentiment context, on-chain valuation context, volatility analytics, a simplified research score, and an optional AI-generated summary."
+            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, macro sentiment context, recent headline context, on-chain valuation context, volatility analytics, a simplified research score, and an optional AI-generated summary."
             icon={<Gauge className="h-5 w-5" />}
             className="md:col-span-2"
           >
@@ -165,27 +185,72 @@ export default function MethodologyPage() {
           />
 
           <GuideCard
-            label="Research Score"
-            title="A Simplified Educational Framework"
-            description="The score combines available inputs into a 0 to 100 research indicator. It is intentionally simplified and is not a buy/sell signal."
+            label="Research Score v2"
+            title="Market Score, Context Score, and Composite View"
+            description="Research Score v2 separates direct market structure from broader context so unavailable or noisy signals do not distort one fragile number. It is simplified, educational, and not a buy/sell signal."
             icon={<Gauge className="h-5 w-5" />}
             className="md:col-span-2"
           >
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-              {scoreCategories.map((category) => (
-                <div
-                  key={category.name}
-                  className="rounded-xl border border-slate-800 bg-slate-950/60 p-3"
-                >
-                  <p className="text-sm font-semibold text-slate-100">
-                    {category.name}
-                  </p>
-                  <p className="mt-2 text-xs leading-5 text-slate-400">
-                    {category.explanation}
-                  </p>
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                <p className="text-sm font-semibold text-slate-100">
+                  Market Score
+                </p>
+                <p className="mt-2 text-xs leading-5 text-slate-400">
+                  Measures price, liquidity, volatility, drawdown, and DeFi TVL
+                  trend where available.
+                </p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {marketScoreCategories.map((category) => (
+                    <div
+                      key={category.name}
+                      className="rounded-lg border border-slate-800 bg-slate-900/70 p-3"
+                    >
+                      <p className="text-sm font-semibold text-slate-100">
+                        {category.name}
+                      </p>
+                      <p className="mt-2 text-xs leading-5 text-slate-400">
+                        {category.explanation}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                <p className="text-sm font-semibold text-slate-100">
+                  Context Score
+                </p>
+                <p className="mt-2 text-xs leading-5 text-slate-400">
+                  Measures broader conditions such as macro regime, Fear & Greed,
+                  headline sentiment, and MVRV when available.
+                </p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {contextScoreCategories.map((category) => (
+                    <div
+                      key={category.name}
+                      className="rounded-lg border border-slate-800 bg-slate-900/70 p-3"
+                    >
+                      <p className="text-sm font-semibold text-slate-100">
+                        {category.name}
+                      </p>
+                      <p className="mt-2 text-xs leading-5 text-slate-400">
+                        {category.explanation}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            <BulletList
+              items={[
+                "Composite Research View combines Market Score and Context Score with conservative rules rather than blindly averaging them.",
+                "Unavailable DeFi data, news, or MVRV is treated as neutral/unavailable, not bearish.",
+                "Extreme Fear & Greed readings are treated as stress or overheating context, not automatic opportunity or strength.",
+                "Scores are research aids and should not be used as a standalone decision engine.",
+              ]}
+            />
           </GuideCard>
 
           <GuideCard
@@ -236,9 +301,25 @@ export default function MethodologyPage() {
           </GuideCard>
 
           <GuideCard
+            label="News & Sentiment Context"
+            title="Recent Headline Backdrop"
+            description="The news panel uses recent GDELT headlines for the selected asset as market context. Its sentiment label is a simplified keyword heuristic applied to headline text only."
+            icon={<Newspaper className="h-5 w-5" />}
+          >
+            <BulletList
+              items={[
+                "Headlines can be noisy, duplicated, biased, or incomplete, even after basic deduplication.",
+                "A positive or negative headline label does not imply a future market outcome or an action to take.",
+                "The AI summary receives only the provided headline metadata and is instructed not to infer full article contents.",
+                "Headline sentiment is context only and is not a standalone trading signal.",
+              ]}
+            />
+          </GuideCard>
+
+          <GuideCard
             label="AI Analyst Summary"
             title="Structured Gemini Analysis"
-            description="The optional AI summary uses Gemini API and receives only structured market, score, DeFi, macro, and on-chain valuation context already shown by the dashboard. It is instructed not to use external news or knowledge and not to make price predictions."
+            description="The optional AI summary uses Gemini API and receives only structured market, score, DeFi, macro, provided headline metadata, and on-chain valuation context already shown by the dashboard. It is instructed not to open links, infer article contents, use outside knowledge, or make price predictions."
             icon={<BrainCircuit className="h-5 w-5" />}
           >
             <BulletList
@@ -262,6 +343,7 @@ export default function MethodologyPage() {
                 "AI output may be incomplete or incorrect.",
                 "DeFi metrics do not apply equally to all assets.",
                 "Sentiment indicators describe a backdrop and do not determine future market behavior.",
+                "Headline sentiment is keyword-based, noisy, and may not capture an article's full meaning.",
                 "MVRV data may be unavailable and its simplified thresholds do not time short-term market moves.",
                 "This dashboard is not financial advice or a trading system.",
               ]}

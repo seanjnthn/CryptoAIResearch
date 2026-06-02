@@ -8,6 +8,7 @@ import CoinSelector from "@/components/CoinSelector";
 import DefiFundamentals from "@/components/DefiFundamentals";
 import MacroSentimentPanel from "@/components/MacroSentimentPanel";
 import MarketSnapshot from "@/components/MarketSnapshot";
+import NewsSentimentPanel from "@/components/NewsSentimentPanel";
 import OnchainValuation from "@/components/OnchainValuation";
 import PriceChart from "@/components/PriceChart";
 import ScoreCard from "@/components/ScoreCard";
@@ -23,6 +24,7 @@ import type {
   MacroSentimentData,
   MarketApiError,
   MarketApiResponse,
+  NewsSentimentData,
   OnchainValuationData,
   WatchlistCoin,
 } from "@/types/crypto";
@@ -70,10 +72,13 @@ export default function Home() {
     null,
   );
   const [isOnchainLoading, setIsOnchainLoading] = useState(true);
+  const [newsData, setNewsData] = useState<NewsSentimentData | null>(null);
+  const [isNewsLoading, setIsNewsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const latestRequestId = useRef(0);
   const latestDefiRequestId = useRef(0);
   const latestOnchainRequestId = useRef(0);
+  const latestNewsRequestId = useRef(0);
   const allCoins = useMemo(
     () => [...defaultWatchlist, ...customCoins],
     [customCoins],
@@ -93,30 +98,49 @@ export default function Home() {
     }
 
     const market = marketData.market;
-    const score = calculateResearchScore({
-      change24h: market.priceChangePercentage24h,
-      change7d: market.priceChangePercentage7d,
-      change30d: market.priceChangePercentage30d,
-      volumeToMarketCap: market.marketCap > 0 ? market.totalVolume / market.marketCap : 0,
-      volatility30d: realizedVolatility ?? 60,
-      athDrawdown: market.athChangePercentage,
-      tvlChange30d:
-        market.id === coin.coinId && defiData?.sourceAvailable
-          ? defiData.tvlChange30d
-          : undefined,
-    });
+    const score = calculateResearchScore(
+      {
+        change24h: market.priceChangePercentage24h,
+        change7d: market.priceChangePercentage7d,
+        change30d: market.priceChangePercentage30d,
+        volumeToMarketCap:
+          market.marketCap > 0 ? market.totalVolume / market.marketCap : 0,
+        volatility30d: realizedVolatility ?? 60,
+        athDrawdown: market.athChangePercentage,
+        tvlChange30d:
+          market.id === coin.coinId && defiData?.sourceAvailable
+            ? defiData.tvlChange30d
+            : undefined,
+      },
+      {
+        macroData,
+        newsData,
+        onchainData,
+      },
+    );
 
     return {
       ...score,
-      notes:
+      marketScore:
         realizedVolatility === null
-          ? [
-              ...score.notes,
-              "Realized volatility is unavailable, so a neutral volatility score is used.",
-            ]
-          : score.notes,
+          ? {
+              ...score.marketScore,
+              notes: [
+                ...score.marketScore.notes,
+                "Realized volatility is unavailable, so a neutral volatility score is used.",
+              ],
+            }
+          : score.marketScore,
     };
-  }, [coin.coinId, defiData, marketData, realizedVolatility]);
+  }, [
+    coin.coinId,
+    defiData,
+    macroData,
+    marketData,
+    newsData,
+    onchainData,
+    realizedVolatility,
+  ]);
 
   useEffect(() => {
     const defaultCoinIds = new Set(defaultWatchlist.map((watchlistCoin) => watchlistCoin.coinId));
@@ -355,6 +379,66 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const requestId = latestNewsRequestId.current + 1;
+
+    latestNewsRequestId.current = requestId;
+
+    async function fetchNewsContext() {
+      setIsNewsLoading(true);
+      setNewsData(null);
+
+      const search = new URLSearchParams({
+        coinId: coin.coinId,
+        symbol: coin.symbol,
+        name: coin.name,
+      });
+
+      try {
+        const response = await fetch(`/api/news?${search.toString()}`, {
+          signal: controller.signal,
+        });
+        const data = (await response.json()) as NewsSentimentData;
+
+        if (controller.signal.aborted || requestId !== latestNewsRequestId.current) {
+          return;
+        }
+
+        setNewsData(data);
+      } catch {
+        if (controller.signal.aborted || requestId !== latestNewsRequestId.current) {
+          return;
+        }
+
+        setNewsData({
+          sourceAvailable: false,
+          provider: "gdelt",
+          query: "",
+          attemptedUrls: [],
+          upstreamStatus: null,
+          upstreamMessage: "News request failed.",
+          rawResultCount: 0,
+          articles: [],
+          sentimentLabel: "Unavailable",
+          positiveCount: 0,
+          negativeCount: 0,
+          notes: ["Headline sentiment is heuristic and may be noisy."],
+          message: "Recent headline context is temporarily unavailable.",
+          error: true,
+        });
+      } finally {
+        if (!controller.signal.aborted && requestId === latestNewsRequestId.current) {
+          setIsNewsLoading(false);
+        }
+      }
+    }
+
+    fetchNewsContext();
+
+    return () => controller.abort();
+  }, [coin.coinId, coin.name, coin.symbol]);
+
+  useEffect(() => {
+    const controller = new AbortController();
     const requestId = latestOnchainRequestId.current + 1;
 
     latestOnchainRequestId.current = requestId;
@@ -458,12 +542,12 @@ export default function Home() {
             Crypto AI Research Dashboard
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
-            Review live market context, macro sentiment, on-chain valuation, realized
-            volatility, DeFi fundamentals, and on-demand structured AI summaries in one
-            focused workspace.
+            Review live market context, macro sentiment, headline context, on-chain
+            valuation, realized volatility, DeFi fundamentals, and on-demand
+            structured AI summaries in one focused workspace.
           </p>
           <div className="mt-6 flex flex-wrap gap-2 text-xs font-medium text-slate-400">
-            {["CoinGecko market data", "DeFiLlama TVL context", "Macro sentiment backdrop", "Coin Metrics MVRV context", "Gemini structured summary"].map(
+            {["CoinGecko market data", "DeFiLlama TVL context", "Macro sentiment backdrop", "GDELT headline context", "Coin Metrics MVRV context", "Gemini structured summary"].map(
               (source) => (
                 <span key={source} className="rounded-full border border-slate-800 bg-slate-900/70 px-3 py-1.5">
                   {source}
@@ -610,6 +694,7 @@ export default function Home() {
           )}
 
           <MacroSentimentPanel data={macroData} isLoading={isMacroLoading} />
+          <NewsSentimentPanel data={newsData} isLoading={isNewsLoading} />
 
           {marketData && researchScore && (
             <>
@@ -628,6 +713,7 @@ export default function Home() {
             defiData={defiData}
             macroData={macroData}
             onchainData={onchainData}
+            newsData={newsData}
             realizedVolatility={currentMarket ? realizedVolatility : null}
             canGenerate={Boolean(
               currentMarket &&
@@ -642,8 +728,9 @@ export default function Home() {
 
         <footer className="pt-10 text-center text-xs leading-6 text-slate-500">
           Market and chart data from CoinGecko. DeFi TVL data from DeFiLlama.
-          Sentiment context from Alternative.me. MVRV context from Coin Metrics.
-          AI summaries generate on demand from available structured data. Research assistant only.
+          Sentiment context from Alternative.me. Headlines from GDELT. MVRV context
+          from Coin Metrics. AI summaries generate on demand from available
+          structured data. Research assistant only.
         </footer>
       </div>
     </main>

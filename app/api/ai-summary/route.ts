@@ -24,15 +24,23 @@ function isNullableString(value: unknown) {
   return value === null || typeof value === "string";
 }
 
+function isStringArray(value: unknown) {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
 function isValidRequest(data: unknown): data is AiSummaryRequest {
   if (!data || typeof data !== "object") return false;
 
   const input = data as Partial<AiSummaryRequest>;
   const market = input.marketData;
   const scoring = input.scoring;
+  const marketScore = scoring?.marketScore;
+  const contextScore = scoring?.contextScore;
+  const compositeView = scoring?.compositeView;
   const defi = input.defiData;
   const macro = input.macroData;
   const onchain = input.onchainData;
+  const news = input.newsData;
 
   return Boolean(
     input.coin &&
@@ -50,14 +58,32 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
       isNumber(market.athChangePercentage) &&
       (market.volatility30d === null || isNumber(market.volatility30d)) &&
       scoring &&
-      isNumber(scoring.totalScore) &&
-      isNumber(scoring.trendScore) &&
-      isNumber(scoring.liquidityScore) &&
-      isNumber(scoring.volatilityScore) &&
-      isNumber(scoring.drawdownScore) &&
-      isNumber(scoring.fundamentalScore) &&
-      typeof scoring.verdict === "string" &&
-      Array.isArray(scoring.notes) &&
+      marketScore &&
+      isNumber(marketScore.totalScore) &&
+      isNumber(marketScore.trendScore) &&
+      isNumber(marketScore.liquidityScore) &&
+      isNumber(marketScore.volatilityScore) &&
+      isNumber(marketScore.drawdownScore) &&
+      isNumber(marketScore.fundamentalScore) &&
+      ["Strong", "Constructive", "Neutral", "Weak", "High Risk"].includes(
+        marketScore.verdict,
+      ) &&
+      isStringArray(marketScore.notes) &&
+      contextScore &&
+      isNumber(contextScore.totalScore) &&
+      isNumber(contextScore.macroScore) &&
+      isNumber(contextScore.fearGreedScore) &&
+      isNumber(contextScore.newsScore) &&
+      isNumber(contextScore.onchainScore) &&
+      ["Supportive", "Neutral", "Mixed", "Risky", "Unavailable"].includes(
+        contextScore.verdict,
+      ) &&
+      isStringArray(contextScore.notes) &&
+      compositeView &&
+      ["Constructive", "Neutral", "Mixed", "Caution", "High Risk"].includes(
+        compositeView.label,
+      ) &&
+      typeof compositeView.explanation === "string" &&
       defi &&
       typeof defi.sourceAvailable === "boolean" &&
       typeof defi.label === "string" &&
@@ -74,7 +100,7 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
       ["Risk-on", "Neutral", "Risk-off", "Mixed", "Unavailable"].includes(
         macro.regime,
       ) &&
-      Array.isArray(macro.notes) &&
+      isStringArray(macro.notes) &&
       macro.notes.every((note) => typeof note === "string") &&
       onchain &&
       typeof onchain.sourceAvailable === "boolean" &&
@@ -84,10 +110,7 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
       isNullableString(onchain.attemptedUrl) &&
       isNullableNumber(onchain.upstreamStatus) &&
       isNullableString(onchain.upstreamMessage) &&
-      Array.isArray(onchain.availableMetricsTried) &&
-      onchain.availableMetricsTried.every(
-        (metric) => typeof metric === "string",
-      ) &&
+      isStringArray(onchain.availableMetricsTried) &&
       isNullableString(onchain.metricLabel) &&
       isNullableString(onchain.time) &&
       isNullableNumber(onchain.mvrv) &&
@@ -100,10 +123,35 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
         "Overheated",
         "Unavailable",
       ].includes(onchain.valuationState) &&
-      Array.isArray(onchain.notes) &&
-      onchain.notes.every((note) => typeof note === "string") &&
+      isStringArray(onchain.notes) &&
       typeof onchain.message === "string" &&
-      typeof onchain.error === "boolean",
+      typeof onchain.error === "boolean" &&
+      news &&
+      typeof news.sourceAvailable === "boolean" &&
+      news.provider === "gdelt" &&
+      typeof news.query === "string" &&
+      isStringArray(news.attemptedUrls) &&
+      isNullableNumber(news.upstreamStatus) &&
+      isNullableString(news.upstreamMessage) &&
+      isNumber(news.rawResultCount) &&
+      Array.isArray(news.articles) &&
+      news.articles.every(
+        (article) =>
+          typeof article.title === "string" &&
+          typeof article.url === "string" &&
+          isNullableString(article.source) &&
+          isNullableString(article.publishedAt) &&
+          isNullableString(article.language) &&
+          isNullableString(article.domain),
+      ) &&
+      ["Positive", "Neutral", "Negative", "Mixed", "Unavailable"].includes(
+        news.sentimentLabel,
+      ) &&
+      isNumber(news.positiveCount) &&
+      isNumber(news.negativeCount) &&
+      isStringArray(news.notes) &&
+      typeof news.message === "string" &&
+      typeof news.error === "boolean",
   );
 }
 

@@ -95,6 +95,39 @@ export interface OnchainValuationData {
   error: boolean;
 }
 
+export type NewsSentimentLabel =
+  | "Positive"
+  | "Neutral"
+  | "Negative"
+  | "Mixed"
+  | "Unavailable";
+
+export interface NewsArticle {
+  title: string;
+  url: string;
+  source: string | null;
+  publishedAt: string | null;
+  language: string | null;
+  domain: string | null;
+}
+
+export interface NewsSentimentData {
+  sourceAvailable: boolean;
+  provider: "gdelt";
+  query: string;
+  attemptedUrls: string[];
+  upstreamStatus: number | null;
+  upstreamMessage: string | null;
+  rawResultCount: number;
+  articles: NewsArticle[];
+  sentimentLabel: NewsSentimentLabel;
+  positiveCount: number;
+  negativeCount: number;
+  notes: string[];
+  message: string;
+  error: boolean;
+}
+
 export interface AiSummaryRequest {
   coin: {
     id: string;
@@ -116,6 +149,7 @@ export interface AiSummaryRequest {
   defiData: DefiFundamentalsData;
   macroData: MacroSentimentData;
   onchainData: OnchainValuationData;
+  newsData: NewsSentimentData;
 }
 
 export interface AiSummaryResponse {
@@ -131,7 +165,7 @@ export interface AiSummaryError {
   message: string;
 }
 
-export interface ScoringInput {
+export interface MarketScoreInput {
   change24h: number;
   change7d: number;
   change30d: number;
@@ -141,22 +175,63 @@ export interface ScoringInput {
   tvlChange30d?: number;
 }
 
-export type ResearchVerdict =
+export interface ContextScoreInput {
+  macroData?: MacroSentimentData | null;
+  newsData?: NewsSentimentData | null;
+  onchainData?: OnchainValuationData | null;
+}
+
+export type MarketVerdict =
   | "Strong"
   | "Constructive"
   | "Neutral"
   | "Weak"
   | "High Risk";
 
-export interface ScoringResult {
+export interface MarketScoreResult {
   totalScore: number;
   trendScore: number;
   liquidityScore: number;
   volatilityScore: number;
   drawdownScore: number;
   fundamentalScore: number;
-  verdict: ResearchVerdict;
+  verdict: MarketVerdict;
   notes: string[];
+}
+
+export type ContextVerdict =
+  | "Supportive"
+  | "Neutral"
+  | "Mixed"
+  | "Risky"
+  | "Unavailable";
+
+export interface ContextScoreResult {
+  totalScore: number;
+  macroScore: number;
+  fearGreedScore: number;
+  newsScore: number;
+  onchainScore: number;
+  verdict: ContextVerdict;
+  notes: string[];
+}
+
+export type CompositeResearchLabel =
+  | "Constructive"
+  | "Neutral"
+  | "Mixed"
+  | "Caution"
+  | "High Risk";
+
+export interface CompositeResearchView {
+  label: CompositeResearchLabel;
+  explanation: string;
+}
+
+export interface ScoringResult {
+  marketScore: MarketScoreResult;
+  contextScore: ContextScoreResult;
+  compositeView: CompositeResearchView;
 }
 
 export interface WatchlistCoin {

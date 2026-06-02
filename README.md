@@ -1,6 +1,6 @@
 # Crypto AI Research Dashboard
 
-A beginner-friendly research assistant for reviewing crypto market context, macro sentiment, on-chain valuation, DeFi fundamentals, transparent scoring, and an on-demand structured AI summary. It is not a trading bot, does not provide financial advice, and does not generate guaranteed predictions.
+A beginner-friendly research assistant for reviewing crypto market context, macro sentiment, headline context, on-chain valuation, DeFi fundamentals, transparent scoring, and an on-demand structured AI summary. It is not a trading bot, does not provide financial advice, and does not generate guaranteed predictions.
 
 ## Why I Built This
 
@@ -26,10 +26,11 @@ Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing
 - Add custom watchlist assets by CoinGecko coin ID, stored locally in the browser without login.
 - View current price, market capitalization, volume, all-time-high context, and a 30-day chart.
 - Calculate annualized 30-day realized volatility from historical daily closing prices.
-- Review a transparent research score with explanatory categories and notes.
+- Review Research Score v2 with separate Market Score, Context Score, and Composite Research View.
 - Read an in-app Methodology & User Guide explaining how the data and score should be interpreted.
 - Show DeFi total value locked (TVL) context where it is relevant and available.
 - Review broader macro and sentiment context using global crypto metrics and the Fear & Greed Index.
+- Review recent GDELT headlines with a transparent keyword-based sentiment backdrop.
 - View optional On-chain Valuation / MVRV context where Coin Metrics coverage is available.
 - Generate an optional Gemini analyst summary from the currently displayed structured data only.
 - Preserve usable cached market data when CoinGecko is temporarily unavailable or rate limited.
@@ -43,9 +44,10 @@ not portfolio holdings, do not require an account, and do not sync across device
 - Live crypto market data from CoinGecko.
 - DeFi fundamentals from DeFiLlama.
 - Macro and sentiment context from CoinGecko global data and Alternative.me Fear & Greed.
+- News and sentiment context from recent GDELT headlines.
 - On-chain MVRV valuation context from Coin Metrics Community API when available.
 - Realized 30D volatility calculation.
-- Simplified research scoring model.
+- Research Score v2 with separate market and context scoring.
 - Gemini-powered AI summary based only on structured data.
 - API key handling through environment variables.
 - Graceful error handling for external API failures.
@@ -63,14 +65,21 @@ not portfolio holdings, do not require an account, and do not sync across device
 - **CoinGecko**: asset market snapshots, historical chart data, and global crypto market context.
 - **DeFiLlama**: chain TVL history used for DeFi fundamentals where applicable.
 - **Alternative.me**: current Crypto Fear & Greed Index sentiment context.
+- **GDELT Doc API**: recent selected-asset headlines used for contextual headline review.
 - **Coin Metrics Community API**: MVRV, realized capitalization, and market capitalization where supported.
 - **Gemini API**: on-demand structured analyst summary.
 
 API keys are used only in server-side routes and are never sent to the browser.
 
-## Research Score Methodology
+## Research Score v2 Methodology
 
-The score is a research-support framework from 0 to 100:
+The scoring system is a research-support framework that separates direct market
+structure from broader context. This prevents every noisy or unavailable signal
+from being forced into one fragile number.
+
+### Market Score
+
+Market Score is scored from 0 to 100:
 
 | Category | Maximum | Input |
 | --- | ---: | --- |
@@ -80,13 +89,43 @@ The score is a research-support framework from 0 to 100:
 | Drawdown | 15 | Distance from all-time high with trend context |
 | Fundamental | 20 | 30-day DeFi TVL change when relevant and available |
 
-Missing DeFi fundamentals or insufficient volatility data are treated neutrally rather than as a negative signal.
+Missing DeFi fundamentals or insufficient volatility data are treated neutrally
+rather than as a negative signal.
+
+### Context Score
+
+Context Score is also scored from 0 to 100:
+
+| Category | Maximum | Input |
+| --- | ---: | --- |
+| Macro regime | 35 | CoinGecko global market context and risk regime |
+| Fear & Greed | 25 | Alternative.me sentiment level, with extremes treated cautiously |
+| News sentiment | 20 | GDELT headline sentiment heuristic |
+| On-chain / MVRV | 20 | Coin Metrics valuation context when provider data is available |
+
+Extreme greed is treated as potential overheating risk, not automatic strength.
+Extreme fear is treated as stress or capitulation context, not automatic opportunity.
+Unavailable news or provider-limited MVRV data is treated as neutral/unavailable,
+not bearish.
+
+### Composite Research View
+
+The Composite Research View does not blindly average Market Score and Context
+Score. It uses conservative rules:
+
+- Constructive market data with supportive or neutral context can produce a Constructive view.
+- Constructive market data with risky context becomes Mixed or Caution.
+- Weak market data plus risky context becomes High Risk.
+- Missing context keeps the explanation conservative and highlights limitations.
+
+All score labels are simplified research aids. They are not price predictions,
+financial advice, or buy/sell signals.
 
 ## Macro & Sentiment Context
 
-The macro panel is displayed separately from the numerical research score. It shows
-total crypto market capitalization, global 24-hour market-cap change, BTC dominance,
-and the current Alternative.me Crypto Fear & Greed reading.
+The macro panel supports the Context Score and is also displayed as its own card.
+It shows total crypto market capitalization, global 24-hour market-cap change,
+BTC dominance, and the current Alternative.me Crypto Fear & Greed reading.
 
 Its simple regime label uses transparent context rules: a strong broad-market decline
 or extreme fear can indicate a risk-off backdrop, a strong broad-market rise with
@@ -117,9 +156,20 @@ The dashboard uses simplified contextual labels:
 These categories are cycle context only. They do not predict future price movement
 and are not a standalone trading signal.
 
+## News & Sentiment Context
+
+The news panel queries the free/open GDELT Doc API for recent headlines related to the
+selected asset. It displays a short deduplicated list of links and applies a deliberately
+simple keyword heuristic to headline text.
+
+The sentiment label is contextual only: matching positive keywords, negative keywords,
+both groups, or neither group results in a `Positive`, `Negative`, `Mixed`, or `Neutral`
+label. Headlines may be noisy, incomplete, duplicated across publishers, or misleading
+without the full article. The label is not a buy/sell signal.
+
 ## AI Summary
 
-The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, research score, realized volatility, available DeFi context, displayed macro/sentiment context, and available MVRV context. It does not receive chart history and is instructed to use no external narratives or unsupported facts.
+The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, Market Score, Context Score, Composite Research View, realized volatility, available DeFi context, displayed macro/sentiment context, provided headline metadata, and available MVRV context. It does not receive chart history or full article contents and is instructed to use no external narratives or unsupported facts.
 
 The output is intended as a concise structured data summary and is not a standalone trading signal. Gemini is prompted to avoid external narratives, unsupported facts, financial advice, exact price predictions, or recommendation language.
 
@@ -128,8 +178,10 @@ The output is intended as a concise structured data summary and is not a standal
 - **Next.js App Router:** keeps pages and server-side API routes in one readable full-stack project structure.
 - **Server-side API requests:** keeps CoinGecko and Gemini credentials out of browser code and centralizes provider error handling.
 - **Structured JSON for Gemini:** restricts the summary to data already visible in the dashboard and reduces unsupported narrative generation.
-- **Separate macro context panel:** keeps sentiment as an explanatory backdrop instead of folding it into a buy/sell-style score.
-- **Separate MVRV panel:** presents on-chain valuation as long-cycle context without changing the simplified research score.
+- **Separated Market Score and Context Score:** keeps direct market structure distinct from broader macro, news, and on-chain context.
+- **Separate macro context panel:** keeps sentiment as an explanatory backdrop instead of presenting it as a buy/sell-style signal.
+- **Headline-only news context:** keeps GDELT sentiment transparent and heuristic rather than presenting it as predictive analysis.
+- **Separate MVRV panel:** presents on-chain valuation as long-cycle context and treats provider-limited data as neutral/unavailable.
 - **Research-support scoring:** makes the methodology explainable while avoiding recommendation or financial-advice framing.
 - **No funding-rate module in this MVP:** an earlier Binance funding experiment was intentionally removed because local network/DNS reliability made that data source unsuitable for a stable portfolio demo.
 
@@ -169,9 +221,11 @@ npm.cmd run build
 ## Limitations
 
 - Research scores are simplified and educational; they are not decision signals.
+- Context Score depends on provider availability and heuristic labels, so unavailable context is treated neutrally rather than as bearish.
 - CoinGecko and Gemini free tiers may apply rate limits that temporarily affect individual cards.
 - DeFi metrics may not apply to every supported asset.
 - Fear & Greed and global market metrics provide contextual snapshots and can be noisy or incomplete.
+- GDELT headline sentiment is a keyword-based heuristic; headlines can be noisy, duplicated, biased, or incomplete.
 - MVRV availability depends on data provider coverage and access level because it requires realized-cap data.
 - The app gracefully handles unavailable MVRV data, and missing MVRV is not treated as bearish.
 - Simplified MVRV thresholds describe possible cycle context, not short-term timing.
@@ -182,7 +236,7 @@ npm.cmd run build
 
 ## Disclaimer
 
-This project is a research assistant only. Its research score is simplified and educational. It does not provide financial advice, generate guaranteed predictions, or act as a standalone trading signal.
+This project is a research assistant only. Its Market Score, Context Score, and Composite Research View are simplified and educational. It does not provide financial advice, generate guaranteed predictions, or act as a standalone trading signal.
 
 ## What I Learned
 
@@ -190,7 +244,7 @@ This project is a research assistant only. Its research score is simplified and 
 - Creating API routes that keep third-party API keys on the server.
 - Fetching and normalizing market data from CoinGecko and DeFi metrics from DeFiLlama.
 - Calculating annualized realized volatility from historical daily closing prices.
-- Designing a simplified, explainable research scoring methodology.
+- Designing a simplified, explainable scoring methodology that separates market data from context data.
 - Using Gemini only with structured app data to reduce hallucination risk.
 - Handling API rate limits, unavailable metrics, cached fallback data, and isolated UI errors gracefully.
 
@@ -200,13 +254,13 @@ This project is an AI-assisted crypto research dashboard built to combine market
 
 **Short description for GitHub About or LinkedIn:**
 
-> AI-assisted crypto research dashboard using Next.js, CoinGecko, DeFiLlama, Gemini API, and a simplified research scoring engine.
+> AI-assisted crypto research dashboard using Next.js, CoinGecko, DeFiLlama, Gemini API, and a simplified market/context research scoring engine.
 
 ## Future Roadmap
 
 - Portfolio tracking.
 - More robust scoring methodology.
-- News headline context module.
+- Expanded headline filtering and source-quality controls.
 - Additional on-chain metrics.
 - Optional paid on-chain data provider support for MVRV.
 - Glassnode, Santiment, or Coin Metrics Pro integration for expanded valuation context.

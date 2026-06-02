@@ -9,6 +9,7 @@ import type {
   DefiFundamentalsData,
   MacroSentimentData,
   MarketData,
+  NewsSentimentData,
   OnchainValuationData,
   ScoringResult,
   WatchlistCoin,
@@ -21,6 +22,7 @@ interface AiSummaryProps {
   defiData: DefiFundamentalsData | null;
   macroData: MacroSentimentData | null;
   onchainData: OnchainValuationData | null;
+  newsData: NewsSentimentData | null;
   realizedVolatility: number | null;
   canGenerate: boolean;
 }
@@ -87,6 +89,7 @@ export default function AiSummary({
   defiData,
   macroData,
   onchainData,
+  newsData,
   realizedVolatility,
   canGenerate,
 }: AiSummaryProps) {
@@ -154,6 +157,23 @@ export default function AiSummary({
           message: "MVRV unavailable for this asset or data source.",
           error: false,
         },
+      newsData:
+        newsData ?? {
+          sourceAvailable: false,
+          provider: "gdelt",
+          query: "",
+          attemptedUrls: [],
+          upstreamStatus: null,
+          upstreamMessage: null,
+          rawResultCount: 0,
+          articles: [],
+          sentimentLabel: "Unavailable",
+          positiveCount: 0,
+          negativeCount: 0,
+          notes: ["Headline sentiment is heuristic and may be noisy."],
+          message: "Recent headline context is unavailable.",
+          error: false,
+        },
     };
 
     latestRequestId.current = requestId;
@@ -214,8 +234,8 @@ export default function AiSummary({
       {!summary && !isLoading && (
         <p className="rounded-xl border border-cyan-400/10 bg-cyan-400/5 p-4 text-sm leading-6 text-slate-300">
           Click Generate AI Summary to create a structured research note based on the
-          current market, score, DeFi, macro sentiment, and on-chain valuation
-          context.
+          current market score, context score, DeFi, macro sentiment, headline, and
+          on-chain valuation context.
         </p>
       )}
 
@@ -258,8 +278,8 @@ export default function AiSummary({
 
       {!canGenerate && !isLoading && (
         <p className="mt-3 text-xs text-slate-500">
-          Load the selected coin's market, DeFi, and macro context before generating a
-          summary.
+          Load the selected coin's market, DeFi, macro, and context score data before
+          generating a summary.
         </p>
       )}
 
