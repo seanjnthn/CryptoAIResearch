@@ -146,7 +146,7 @@ export default function MethodologyPage() {
           <GuideCard
             label="Purpose"
             title="What This Dashboard Does"
-            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, macro sentiment context, recent headline context, on-chain valuation context, volatility analytics, a simplified research score, and an optional AI-generated summary."
+            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, macro sentiment context, recent headline context, on-chain valuation context, volatility analytics, comparison mode, a simplified research score, and an optional AI-generated summary."
             icon={<Gauge className="h-5 w-5" />}
             className="md:col-span-2"
           >
@@ -249,6 +249,23 @@ export default function MethodologyPage() {
                 "Unavailable DeFi data, news, or MVRV is treated as neutral/unavailable, not bearish.",
                 "Extreme Fear & Greed readings are treated as stress or overheating context, not automatic opportunity or strength.",
                 "Scores are research aids and should not be used as a standalone decision engine.",
+              ]}
+            />
+          </GuideCard>
+
+          <GuideCard
+            label="Compare Mode"
+            title="Side-by-Side Research Context"
+            description="Compare mode lets you review 2 to 5 selected assets using the same market data, context inputs, volatility calculation, and Research Score v2 framework as the main dashboard."
+            icon={<BarChart3 className="h-5 w-5" />}
+            className="md:col-span-2"
+          >
+            <BulletList
+              items={[
+                "Macro data is shared globally because it describes the broader crypto backdrop.",
+                "Market, DeFi, MVRV, and news availability may differ by asset.",
+                "Unavailable DeFi, MVRV, or news values show as N/A and are treated as unavailable context, not automatically bearish.",
+                "Comparison mode is not a ranking recommendation, financial advice, or standalone decision engine.",
               ]}
             />
           </GuideCard>

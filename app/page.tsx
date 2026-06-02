@@ -555,12 +555,20 @@ export default function Home() {
               ),
             )}
           </div>
-          <Link
-            href="/methodology"
-            className="mt-6 inline-flex rounded-xl border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-300/40 hover:bg-cyan-400/10"
-          >
-            Methodology &amp; User Guide
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/compare"
+              className="inline-flex rounded-xl border border-violet-400/20 bg-violet-400/5 px-4 py-2 text-sm font-semibold text-violet-200 transition hover:border-violet-300/40 hover:bg-violet-400/10"
+            >
+              Compare Coins
+            </Link>
+            <Link
+              href="/methodology"
+              className="inline-flex rounded-xl border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-300/40 hover:bg-cyan-400/10"
+            >
+              Methodology &amp; User Guide
+            </Link>
+          </div>
         </header>
 
         <div className="mb-7 flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-4 text-sm leading-6 text-amber-100">

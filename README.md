@@ -27,6 +27,7 @@ Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing
 - View current price, market capitalization, volume, all-time-high context, and a 30-day chart.
 - Calculate annualized 30-day realized volatility from historical daily closing prices.
 - Review Research Score v2 with separate Market Score, Context Score, and Composite Research View.
+- Compare 2 to 5 selected assets side by side using the same research framework.
 - Read an in-app Methodology & User Guide explaining how the data and score should be interpreted.
 - Show DeFi total value locked (TVL) context where it is relevant and available.
 - Review broader macro and sentiment context using global crypto metrics and the Fear & Greed Index.
@@ -48,6 +49,7 @@ not portfolio holdings, do not require an account, and do not sync across device
 - On-chain MVRV valuation context from Coin Metrics Community API when available.
 - Realized 30D volatility calculation.
 - Research Score v2 with separate market and context scoring.
+- Compare Coins Mode for side-by-side research context across selected watchlist assets.
 - Gemini-powered AI summary based only on structured data.
 - API key handling through environment variables.
 - Graceful error handling for external API failures.
@@ -120,6 +122,21 @@ Score. It uses conservative rules:
 
 All score labels are simplified research aids. They are not price predictions,
 financial advice, or buy/sell signals.
+
+## Compare Coins Mode
+
+Compare mode lets users select 2 to 5 assets from the existing watchlist and
+review them side by side using the same data sources and Research Score v2
+logic as the main dashboard.
+
+The comparison page fetches global macro context once because macro conditions
+are shared across all rows. It then fetches market data, DeFi context, optional
+MVRV context, and headline context only for the selected assets. Missing DeFi,
+MVRV, or news data is shown as `N/A` and treated as unavailable context, not as
+an automatically negative signal.
+
+Compare mode is intended for relative research context. It is not a ranking
+recommendation, financial advice, or standalone decision engine.
 
 ## Macro & Sentiment Context
 
@@ -221,6 +238,7 @@ npm.cmd run build
 ## Limitations
 
 - Research scores are simplified and educational; they are not decision signals.
+- Compare mode depends on the same external API availability as the dashboard.
 - Context Score depends on provider availability and heuristic labels, so unavailable context is treated neutrally rather than as bearish.
 - CoinGecko and Gemini free tiers may apply rate limits that temporarily affect individual cards.
 - DeFi metrics may not apply to every supported asset.
