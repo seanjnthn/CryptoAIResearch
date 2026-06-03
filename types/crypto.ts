@@ -150,6 +150,7 @@ export interface AiSummaryRequest {
   macroData: MacroSentimentData;
   onchainData: OnchainValuationData;
   newsData: NewsSentimentData;
+  technicalOutlook: TechnicalOutlookData;
 }
 
 export interface AiSummaryResponse {
@@ -232,6 +233,62 @@ export interface ScoringResult {
   marketScore: MarketScoreResult;
   contextScore: ContextScoreResult;
   compositeView: CompositeResearchView;
+}
+
+export interface TechnicalMacd {
+  macdLine: number;
+  signalLine: number;
+  histogram: number;
+}
+
+export type VolumeTrend = "rising" | "falling" | "flat" | "unavailable";
+
+export interface TechnicalMetrics {
+  ema20: number | null;
+  ema50: number | null;
+  ema200: number | null;
+  rsi14: number | null;
+  macd: TechnicalMacd | null;
+  averageDailyMovePercent: number | null;
+  estimated7dMovePercent: number | null;
+  estimated30dMovePercent: number | null;
+  nearestSupport: number | null;
+  nearestResistance: number | null;
+  volumeTrend: VolumeTrend;
+  notes: string[];
+}
+
+export type TechnicalOutlookLabel =
+  | "Bullish bias"
+  | "Neutral / range-bound"
+  | "Bearish bias"
+  | "Mixed / volatile";
+
+export type TechnicalConfidence = "Low" | "Medium" | "High";
+
+export interface ScenarioRange {
+  rangeLow: number;
+  rangeHigh: number;
+  condition: string;
+}
+
+export interface ScenarioForecast {
+  outlookLabel: TechnicalOutlookLabel;
+  confidence: TechnicalConfidence;
+  trendSummary: string;
+  momentumSummary: string;
+  volatilitySummary: string;
+  supportResistanceSummary: string;
+  bullScenario: ScenarioRange;
+  baseScenario: ScenarioRange;
+  bearScenario: ScenarioRange;
+  invalidationLevel?: number;
+  notes: string[];
+}
+
+export interface TechnicalOutlookData {
+  metrics: TechnicalMetrics;
+  forecast: ScenarioForecast;
 }
 
 export interface WatchlistCoin {

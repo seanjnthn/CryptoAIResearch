@@ -1,6 +1,6 @@
 # Crypto AI Research Dashboard
 
-A beginner-friendly research assistant for reviewing crypto market context, macro sentiment, headline context, on-chain valuation, DeFi fundamentals, transparent scoring, and an on-demand structured AI summary. It is not a trading bot, does not provide financial advice, and does not generate guaranteed predictions.
+A beginner-friendly research assistant for reviewing crypto market context, macro sentiment, headline context, on-chain valuation, DeFi fundamentals, transparent scoring, and an on-demand structured AI summary. It is not a trading bot, does not provide financial advice, and does not generate certain-outcome forecasts.
 
 ## Why I Built This
 
@@ -24,8 +24,9 @@ Place a dashboard screenshot at `public/screenshot-dashboard.png` before sharing
 
 - Select a watchlist asset: BTC, ETH, SOL, SUI, HYPE, TAO, or XRP.
 - Add custom watchlist assets by CoinGecko coin ID, stored locally in the browser without login.
-- View current price, market capitalization, volume, all-time-high context, and a 30-day chart.
+- View current price, market capitalization, volume, all-time-high context, and a recent price chart.
 - Calculate annualized 30-day realized volatility from historical daily closing prices.
+- Review a Technical Outlook & Scenario Forecast built from historical chart data.
 - Review Research Score v2 with separate Market Score, Context Score, and Composite Research View.
 - Compare 2 to 5 selected assets side by side using the same research framework.
 - Read an in-app Methodology & User Guide explaining how the data and score should be interpreted.
@@ -48,6 +49,7 @@ not portfolio holdings, do not require an account, and do not sync across device
 - News and sentiment context from recent GDELT headlines.
 - On-chain MVRV valuation context from Coin Metrics Community API when available.
 - Realized 30D volatility calculation.
+- Technical Outlook & Scenario Forecast using EMA, RSI, MACD, volatility ranges, support/resistance, and volume trend.
 - Research Score v2 with separate market and context scoring.
 - Compare Coins Mode for side-by-side research context across selected watchlist assets.
 - Gemini-powered AI summary based only on structured data.
@@ -138,6 +140,29 @@ an automatically negative signal.
 Compare mode is intended for relative research context. It is not a ranking
 recommendation, financial advice, or standalone decision engine.
 
+## Technical Outlook & Scenario Forecast
+
+The Technical Outlook panel uses existing CoinGecko historical chart data to
+calculate simplified technical indicators:
+
+| Indicator | Purpose |
+| --- | --- |
+| EMA20 / EMA50 / EMA200 | Trend structure when enough daily closes exist |
+| RSI14 | Momentum context |
+| MACD | Momentum shift context |
+| Average daily move | Approximate close-to-close volatility range |
+| Support / resistance | Simple recent price zones based on recent price distribution |
+| Volume trend | Rising, falling, flat, or unavailable based on chart volume |
+
+The scenario forecast creates conditional bull, base, and bear ranges from
+support/resistance and estimated volatility. These ranges are not certain
+targets and are not exact price predictions. They are a simplified research
+framework for thinking about possible technical paths under different
+conditions.
+
+Gemini receives only the calculated technical metrics and scenario output, not
+the full historical chart.
+
 ## Macro & Sentiment Context
 
 The macro panel supports the Context Score and is also displayed as its own card.
@@ -186,7 +211,7 @@ without the full article. The label is not a buy/sell signal.
 
 ## AI Summary
 
-The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, Market Score, Context Score, Composite Research View, realized volatility, available DeFi context, displayed macro/sentiment context, provided headline metadata, and available MVRV context. It does not receive chart history or full article contents and is instructed to use no external narratives or unsupported facts.
+The Gemini summary is generated only after the user clicks **Generate AI Summary**. It receives the selected asset's market snapshot, Market Score, Context Score, Composite Research View, realized volatility, calculated technical outlook, available DeFi context, displayed macro/sentiment context, provided headline metadata, and available MVRV context. It does not receive chart history or full article contents and is instructed to use no external narratives or unsupported facts.
 
 The output is intended as a concise structured data summary and is not a standalone trading signal. Gemini is prompted to avoid external narratives, unsupported facts, financial advice, exact price predictions, or recommendation language.
 
@@ -195,6 +220,7 @@ The output is intended as a concise structured data summary and is not a standal
 - **Next.js App Router:** keeps pages and server-side API routes in one readable full-stack project structure.
 - **Server-side API requests:** keeps CoinGecko and Gemini credentials out of browser code and centralizes provider error handling.
 - **Structured JSON for Gemini:** restricts the summary to data already visible in the dashboard and reduces unsupported narrative generation.
+- **Local technical outlook:** calculates technical context from existing chart data without adding another API.
 - **Separated Market Score and Context Score:** keeps direct market structure distinct from broader macro, news, and on-chain context.
 - **Separate macro context panel:** keeps sentiment as an explanatory backdrop instead of presenting it as a buy/sell-style signal.
 - **Headline-only news context:** keeps GDELT sentiment transparent and heuristic rather than presenting it as predictive analysis.
@@ -241,6 +267,8 @@ npm.cmd run build
 - Compare mode depends on the same external API availability as the dashboard.
 - Context Score depends on provider availability and heuristic labels, so unavailable context is treated neutrally rather than as bearish.
 - CoinGecko and Gemini free tiers may apply rate limits that temporarily affect individual cards.
+- Technical indicators are simplified and depend on the quality and length of CoinGecko chart data.
+- Scenario ranges are conditional and not certain outcomes.
 - DeFi metrics may not apply to every supported asset.
 - Fear & Greed and global market metrics provide contextual snapshots and can be noisy or incomplete.
 - GDELT headline sentiment is a keyword-based heuristic; headlines can be noisy, duplicated, biased, or incomplete.
@@ -254,7 +282,7 @@ npm.cmd run build
 
 ## Disclaimer
 
-This project is a research assistant only. Its Market Score, Context Score, and Composite Research View are simplified and educational. It does not provide financial advice, generate guaranteed predictions, or act as a standalone trading signal.
+This project is a research assistant only. Its Market Score, Context Score, and Composite Research View are simplified and educational. It does not provide financial advice, generate certain-outcome forecasts, or act as a standalone trading signal.
 
 ## What I Learned
 

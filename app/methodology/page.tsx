@@ -146,7 +146,7 @@ export default function MethodologyPage() {
           <GuideCard
             label="Purpose"
             title="What This Dashboard Does"
-            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, macro sentiment context, recent headline context, on-chain valuation context, volatility analytics, comparison mode, a simplified research score, and an optional AI-generated summary."
+            description="The dashboard brings several research inputs into one readable workspace: live market context, DeFi fundamentals, macro sentiment context, recent headline context, on-chain valuation context, volatility analytics, technical scenario context, comparison mode, a simplified research score, and an optional AI-generated summary."
             icon={<Gauge className="h-5 w-5" />}
             className="md:col-span-2"
           >
@@ -276,6 +276,24 @@ export default function MethodologyPage() {
             description="Realized volatility is calculated from historical daily price returns and annualized using sqrt(365), because crypto markets trade every day. Higher volatility indicates wider observed price swings and can suggest higher risk."
             icon={<Waves className="h-5 w-5" />}
           />
+
+          <GuideCard
+            label="Technical Outlook"
+            title="Conditional Scenario Forecast"
+            description="The Technical Outlook & Scenario Forecast uses historical price data to calculate EMA trend, RSI, MACD, approximate volatility ranges, support/resistance, and volume trend. It then generates conditional bull, base, and bear scenario ranges."
+            icon={<BarChart3 className="h-5 w-5" />}
+            className="md:col-span-2"
+          >
+            <BulletList
+              items={[
+                "Scenario ranges are based on historical data and estimated volatility, not certain targets.",
+                "Bull, base, and bear cases are conditional on support, resistance, momentum, and context behavior.",
+                "Confidence is lower when indicators are missing, limited, or conflicting.",
+                "Technical indicators can fail, especially in volatile crypto markets.",
+                "This panel is not financial advice, a promise, or a trading signal.",
+              ]}
+            />
+          </GuideCard>
 
           <GuideCard
             label="DeFi Fundamentals"

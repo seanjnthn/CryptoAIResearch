@@ -41,6 +41,9 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
   const macro = input.macroData;
   const onchain = input.onchainData;
   const news = input.newsData;
+  const technicalOutlook = input.technicalOutlook;
+  const technicalMetrics = technicalOutlook?.metrics;
+  const technicalForecast = technicalOutlook?.forecast;
 
   return Boolean(
     input.coin &&
@@ -151,7 +154,52 @@ function isValidRequest(data: unknown): data is AiSummaryRequest {
       isNumber(news.negativeCount) &&
       isStringArray(news.notes) &&
       typeof news.message === "string" &&
-      typeof news.error === "boolean",
+      typeof news.error === "boolean" &&
+      technicalOutlook &&
+      technicalMetrics &&
+      isNullableNumber(technicalMetrics.ema20) &&
+      isNullableNumber(technicalMetrics.ema50) &&
+      isNullableNumber(technicalMetrics.ema200) &&
+      isNullableNumber(technicalMetrics.rsi14) &&
+      (technicalMetrics.macd === null ||
+        (isNumber(technicalMetrics.macd.macdLine) &&
+          isNumber(technicalMetrics.macd.signalLine) &&
+          isNumber(technicalMetrics.macd.histogram))) &&
+      isNullableNumber(technicalMetrics.averageDailyMovePercent) &&
+      isNullableNumber(technicalMetrics.estimated7dMovePercent) &&
+      isNullableNumber(technicalMetrics.estimated30dMovePercent) &&
+      isNullableNumber(technicalMetrics.nearestSupport) &&
+      isNullableNumber(technicalMetrics.nearestResistance) &&
+      ["rising", "falling", "flat", "unavailable"].includes(
+        technicalMetrics.volumeTrend,
+      ) &&
+      isStringArray(technicalMetrics.notes) &&
+      technicalForecast &&
+      [
+        "Bullish bias",
+        "Neutral / range-bound",
+        "Bearish bias",
+        "Mixed / volatile",
+      ].includes(technicalForecast.outlookLabel) &&
+      ["Low", "Medium", "High"].includes(technicalForecast.confidence) &&
+      typeof technicalForecast.trendSummary === "string" &&
+      typeof technicalForecast.momentumSummary === "string" &&
+      typeof technicalForecast.volatilitySummary === "string" &&
+      typeof technicalForecast.supportResistanceSummary === "string" &&
+      technicalForecast.bullScenario &&
+      isNumber(technicalForecast.bullScenario.rangeLow) &&
+      isNumber(technicalForecast.bullScenario.rangeHigh) &&
+      typeof technicalForecast.bullScenario.condition === "string" &&
+      technicalForecast.baseScenario &&
+      isNumber(technicalForecast.baseScenario.rangeLow) &&
+      isNumber(technicalForecast.baseScenario.rangeHigh) &&
+      typeof technicalForecast.baseScenario.condition === "string" &&
+      technicalForecast.bearScenario &&
+      isNumber(technicalForecast.bearScenario.rangeLow) &&
+      isNumber(technicalForecast.bearScenario.rangeHigh) &&
+      typeof technicalForecast.bearScenario.condition === "string" &&
+      isOptionalNumber(technicalForecast.invalidationLevel) &&
+      isStringArray(technicalForecast.notes),
   );
 }
 

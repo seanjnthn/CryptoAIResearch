@@ -12,6 +12,7 @@ import type {
   NewsSentimentData,
   OnchainValuationData,
   ScoringResult,
+  TechnicalOutlookData,
   WatchlistCoin,
 } from "@/types/crypto";
 
@@ -23,6 +24,7 @@ interface AiSummaryProps {
   macroData: MacroSentimentData | null;
   onchainData: OnchainValuationData | null;
   newsData: NewsSentimentData | null;
+  technicalOutlook: TechnicalOutlookData | null;
   realizedVolatility: number | null;
   canGenerate: boolean;
 }
@@ -90,6 +92,7 @@ export default function AiSummary({
   macroData,
   onchainData,
   newsData,
+  technicalOutlook,
   realizedVolatility,
   canGenerate,
 }: AiSummaryProps) {
@@ -108,7 +111,14 @@ export default function AiSummary({
   }, [coin.coinId]);
 
   async function handleGenerateSummary() {
-    if (!marketData || !scoring || !defiData || !macroData || !canGenerate) {
+    if (
+      !marketData ||
+      !scoring ||
+      !defiData ||
+      !macroData ||
+      !technicalOutlook ||
+      !canGenerate
+    ) {
       return;
     }
 
@@ -174,6 +184,7 @@ export default function AiSummary({
           message: "Recent headline context is unavailable.",
           error: false,
         },
+      technicalOutlook,
     };
 
     latestRequestId.current = requestId;
@@ -235,7 +246,7 @@ export default function AiSummary({
         <p className="rounded-xl border border-cyan-400/10 bg-cyan-400/5 p-4 text-sm leading-6 text-slate-300">
           Click Generate AI Summary to create a structured research note based on the
           current market score, context score, DeFi, macro sentiment, headline, and
-          on-chain valuation context.
+          on-chain valuation context, plus the calculated technical outlook.
         </p>
       )}
 
@@ -278,8 +289,8 @@ export default function AiSummary({
 
       {!canGenerate && !isLoading && (
         <p className="mt-3 text-xs text-slate-500">
-          Load the selected coin's market, DeFi, macro, and context score data before
-          generating a summary.
+          Load the selected coin's market, DeFi, macro, context score, and technical
+          outlook data before generating a summary.
         </p>
       )}
 

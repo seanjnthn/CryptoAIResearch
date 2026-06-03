@@ -31,10 +31,10 @@ export default function PriceChart({ symbol, data }: PriceChartProps) {
           Price Chart
         </p>
         <h2 className="mt-2 text-lg font-semibold">
-          {symbol} 30-day price history
+          {symbol} recent price history
         </h2>
         <p className="mt-1 text-sm text-slate-500">
-          Historical market context used to calculate realized volatility.
+          Historical market context used for realized volatility and technical indicators.
         </p>
       </div>
 

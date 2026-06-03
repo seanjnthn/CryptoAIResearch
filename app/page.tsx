@@ -12,8 +12,11 @@ import NewsSentimentPanel from "@/components/NewsSentimentPanel";
 import OnchainValuation from "@/components/OnchainValuation";
 import PriceChart from "@/components/PriceChart";
 import ScoreCard from "@/components/ScoreCard";
+import TechnicalOutlook from "@/components/TechnicalOutlook";
 import { calculateRealizedVolatility } from "@/lib/analytics";
+import { generateScenarioForecast } from "@/lib/forecast";
 import { calculateResearchScore } from "@/lib/scoring";
+import { calculateTechnicalMetrics } from "@/lib/technical";
 import {
   CUSTOM_WATCHLIST_STORAGE_KEY,
   DEFAULT_COIN_ID,
@@ -92,6 +95,10 @@ export default function Home() {
     () => (marketData ? calculateRealizedVolatility(marketData.chart) : null),
     [marketData],
   );
+  const technicalMetrics = useMemo(
+    () => (marketData ? calculateTechnicalMetrics(marketData.chart) : null),
+    [marketData],
+  );
   const researchScore = useMemo(() => {
     if (!marketData) {
       return null;
@@ -141,6 +148,31 @@ export default function Home() {
     onchainData,
     realizedVolatility,
   ]);
+  const technicalOutlook = useMemo(() => {
+    if (!currentMarket || !researchScore || !technicalMetrics) {
+      return null;
+    }
+
+    return {
+      metrics: technicalMetrics,
+      forecast: generateScenarioForecast({
+        currentPrice: currentMarket.currentPrice,
+        ema20: technicalMetrics.ema20,
+        ema50: technicalMetrics.ema50,
+        ema200: technicalMetrics.ema200,
+        rsi14: technicalMetrics.rsi14,
+        macd: technicalMetrics.macd,
+        support: technicalMetrics.nearestSupport,
+        resistance: technicalMetrics.nearestResistance,
+        averageDailyMovePercent: technicalMetrics.averageDailyMovePercent,
+        estimated7dMovePercent: technicalMetrics.estimated7dMovePercent,
+        estimated30dMovePercent: technicalMetrics.estimated30dMovePercent,
+        volumeTrend: technicalMetrics.volumeTrend,
+        marketScore: researchScore.marketScore,
+        contextScore: researchScore.contextScore,
+      }),
+    };
+  }, [currentMarket, researchScore, technicalMetrics]);
 
   useEffect(() => {
     const defaultCoinIds = new Set(defaultWatchlist.map((watchlistCoin) => watchlistCoin.coinId));
@@ -285,7 +317,7 @@ export default function Home() {
       setWarning(null);
 
       try {
-        const response = await fetch(`/api/market?coinId=${coin.coinId}&days=30`, {
+        const response = await fetch(`/api/market?coinId=${coin.coinId}&days=90`, {
           signal: controller.signal,
         });
         const data = (await response.json()) as MarketApiResponse | MarketApiError;
@@ -543,11 +575,11 @@ export default function Home() {
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
             Review live market context, macro sentiment, headline context, on-chain
-            valuation, realized volatility, DeFi fundamentals, and on-demand
-            structured AI summaries in one focused workspace.
+            valuation, realized volatility, technical scenarios, DeFi fundamentals,
+            and on-demand structured AI summaries in one focused workspace.
           </p>
           <div className="mt-6 flex flex-wrap gap-2 text-xs font-medium text-slate-400">
-            {["CoinGecko market data", "DeFiLlama TVL context", "Macro sentiment backdrop", "GDELT headline context", "Coin Metrics MVRV context", "Gemini structured summary"].map(
+            {["CoinGecko market data", "DeFiLlama TVL context", "Technical scenario context", "Macro sentiment backdrop", "GDELT headline context", "Coin Metrics MVRV context", "Gemini structured summary"].map(
               (source) => (
                 <span key={source} className="rounded-full border border-slate-800 bg-slate-900/70 px-3 py-1.5">
                   {source}
@@ -709,6 +741,7 @@ export default function Home() {
               <MarketSnapshot market={marketData.market} />
               <ScoreCard score={researchScore} realizedVolatility={realizedVolatility} />
               <PriceChart symbol={marketData.market.symbol} data={marketData.chart} />
+              <TechnicalOutlook data={technicalOutlook} />
             </>
           )}
 
@@ -722,10 +755,12 @@ export default function Home() {
             macroData={macroData}
             onchainData={onchainData}
             newsData={newsData}
+            technicalOutlook={technicalOutlook}
             realizedVolatility={currentMarket ? realizedVolatility : null}
             canGenerate={Boolean(
               currentMarket &&
                 researchScore &&
+                technicalOutlook &&
                 defiData &&
                 macroData &&
                 !isDefiLoading &&

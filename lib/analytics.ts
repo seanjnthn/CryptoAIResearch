@@ -1,6 +1,9 @@
 import type { HistoricalChartPoint } from "@/types/crypto";
 
-export function calculateRealizedVolatility(chartData: HistoricalChartPoint[]) {
+export function calculateRealizedVolatility(
+  chartData: HistoricalChartPoint[],
+  lookbackDays = 30,
+) {
   const dailyClosingPrices = new Map<string, { timestamp: number; price: number }>();
 
   chartData.forEach((point) => {
@@ -20,7 +23,8 @@ export function calculateRealizedVolatility(chartData: HistoricalChartPoint[]) {
 
   const closingPrices = Array.from(dailyClosingPrices.values())
     .sort((first, second) => first.timestamp - second.timestamp)
-    .map((point) => point.price);
+    .map((point) => point.price)
+    .slice(-lookbackDays);
 
   if (closingPrices.length < 3) {
     return null;
