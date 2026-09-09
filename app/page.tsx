@@ -568,7 +568,7 @@ export default function Home() {
       onRefresh={() => setRefreshKey((value) => value + 1)}
       isRefreshing={isLoading}
       globalMarketData={macroData?.sourceAvailable ? {
-        totalMarketCap: macroData.totalMarketCap,
+        totalMarketCap: macroData.totalCryptoMarketCap,
         marketCapChange24h: macroData.marketCapChange24h,
         btcDominance: macroData.btcDominance,
         fearGreed: macroData.fearGreedValue,
