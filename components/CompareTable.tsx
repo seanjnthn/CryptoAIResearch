@@ -96,22 +96,21 @@ function Badge({ label }: { label: string | null }) {
 
 export default function CompareTable({ rows }: CompareTableProps) {
   return (
-    <section className="rounded-2xl border border-slate-300/40 bg-white/40 p-4 backdrop-blur-xl shadow-xl shadow-slate-200/30 sm:p-6">
+    <section className="rounded-2xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl shadow-xl shadow-slate-200/30 sm:p-6">
       <div className="mb-5">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-500">
           Side-by-Side Context
         </p>
         <h2 className="mt-2 text-lg font-semibold text-slate-800">Compare selected assets</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Values that cannot be loaded are shown as N/A so one failed source does not
-          break the whole comparison.
+          Values that cannot be loaded are shown as N/A so one failed source does not\n          break the whole comparison.
         </p>
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-[1180px] text-left text-sm">
           <thead>
-            <tr className="border-b border-slate-300/40 text-xs uppercase tracking-[0.18em] text-slate-500">
+            <tr className="border-b border-white/30 text-xs uppercase tracking-[0.18em] text-slate-500">
               <th className="px-3 py-3">Coin</th>
               <th className="px-3 py-3">Price</th>
               <th className="px-3 py-3">24H %</th>
@@ -130,7 +129,7 @@ export default function CompareTable({ rows }: CompareTableProps) {
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.coin.coinId} className="border-b border-slate-200/50 last:border-0">
+              <tr key={row.coin.coinId} className="border-b border-white/20 last:border-0 hover:bg-white/30 transition-colors duration-200">
                 <td className="px-3 py-4">
                   <div>
                     <p className="font-semibold text-slate-800">{row.coin.symbol}</p>

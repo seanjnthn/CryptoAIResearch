@@ -25,21 +25,21 @@ function formatDate(date: string) {
 
 export default function PriceChart({ symbol, data }: PriceChartProps) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-xl shadow-black/10 sm:p-6 lg:col-span-2">
+    <section className="rounded-2xl border border-white/50 bg-white/40 p-5 shadow-xl shadow-slate-200/30 backdrop-blur-xl sm:p-6 lg:col-span-2">
       <div className="mb-6">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-500">
           Price Chart
         </p>
-        <h2 className="mt-2 text-lg font-semibold">
+        <h2 className="mt-2 text-lg font-semibold text-slate-800">
           {symbol} recent price history
         </h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-600">
           Historical market context used for realized volatility and technical indicators.
         </p>
       </div>
 
       {data.length === 0 ? (
-        <div className="flex h-72 items-center justify-center rounded-xl border border-slate-800 bg-slate-950/30 text-sm text-slate-400">
+        <div className="flex h-72 items-center justify-center rounded-xl border border-slate-300/40 bg-white/30 text-sm text-slate-600 backdrop-blur-xl">
           Historical price data is currently unavailable.
         </div>
       ) : (
@@ -55,13 +55,13 @@ export default function PriceChart({ symbol, data }: PriceChartProps) {
               dataKey="date"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: "#64748b", fontSize: 12 }}
               tickFormatter={formatDate}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: "#64748b", fontSize: 12 }}
               tickFormatter={formatValue}
               width={62}
               domain={["dataMin", "dataMax"]}
@@ -70,20 +70,28 @@ export default function PriceChart({ symbol, data }: PriceChartProps) {
               formatter={(value) => [formatValue(Number(value)), "Price"]}
               labelFormatter={(label) => formatDate(String(label))}
               contentStyle={{
-                background: "#0f172a",
-                border: "1px solid #334155",
-                borderRadius: "12px",
-                color: "#e2e8f0",
+                background: "rgba(255, 255, 255, 0.85)",
+                border: "1px solid rgba(255, 255, 255, 0.5)",
+                borderRadius: "16px",
+                color: "#1e293b",
+                backdropFilter: "blur(20px)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
               }}
             />
             <Line
               type="monotone"
               dataKey="price"
-              stroke="#22d3ee"
+              stroke="url(#priceGradient)"
               strokeWidth={3}
               dot={false}
-              activeDot={{ r: 5, fill: "#22d3ee" }}
+              activeDot={{ r: 6, fill: "#007aff" }}
             />
+            <defs>
+              <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#007aff" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#5856d6" stopOpacity={0.8} />
+              </linearGradient>
+            </defs>
           </LineChart>
         </ResponsiveContainer>
       </div>
