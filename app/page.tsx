@@ -1,10 +1,8 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { LoaderCircle, ShieldAlert, TriangleAlert, BrainCircuit, Layers3, BookOpen, Target, PlusCircle, CheckCircle, AlertCircle } from "lucide-react";
+import { LoaderCircle, ShieldAlert, TriangleAlert, BrainCircuit, Layers3, BookOpen, Target, PlusCircle, CheckCircle, AlertCircle, Search } from "lucide-react";
 import AiSummary from "@/components/AiSummary";
-import CoinSelector from "@/components/CoinSelector";
 import DefiFundamentals from "@/components/DefiFundamentals";
 import MacroSentimentPanel from "@/components/MacroSentimentPanel";
 import MarketSnapshot from "@/components/MarketSnapshot";
@@ -31,6 +29,8 @@ import type {
   OnchainValuationData,
   WatchlistCoin,
 } from "@/types/crypto";
+import AppShell from "@/components/ui/AppShell";
+import { DataCompleteness } from "@/components/ui/DataCompleteness";
 
 function isMarketApiError(
   data: MarketApiResponse | MarketApiError,
@@ -564,218 +564,163 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#f5f7fa] via-[#e4e8ec] to-[#d9dee3] px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <div className="mx-auto max-w-[1600px]">
-        {/* Header Section */}
-        <header className="mb-10 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 blur-3xl -z-10" />
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-8 border-b border-white/40">
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30 icon-container">
-                  <BrainCircuit className="text-white" size={24} />
-                </div>
-                <p className="text-sm font-bold uppercase tracking-[0.3em] gradient-text-cyan">
-                  Research Workspace
-                </p>
-              </div>
-              <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-                <span className="gradient-text">Crypto AI Research</span>
-                <br />
-                <span className="text-slate-700">Dashboard</span>
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-                Professional-grade market intelligence platform combining live data, 
-                on-chain analytics, sentiment analysis, and AI-powered insights.
-              </p>
-              
-              {/* Data Sources Pills */}
-              <div className="mt-6 flex flex-wrap gap-2">
-                {[
-                  { name: "CoinGecko", color: "from-emerald-500 to-teal-500" },
-                  { name: "DeFiLlama", color: "from-blue-500 to-indigo-500" },
-                  { name: "Alternative.me", color: "from-purple-500 to-violet-500" },
-                  { name: "GDELT", color: "from-orange-500 to-amber-500" },
-                  { name: "Coin Metrics", color: "from-pink-500 to-rose-500" },
-                  { name: "Gemini AI", color: "from-cyan-500 to-blue-500" },
-                ].map((source) => (
-                  <span 
-                    key={source.name} 
-                    className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r ${source.color} bg-opacity-10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md shadow-md`}
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
-                    {source.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3 lg:flex-col">
-              <Link
-                href="/compare"
-                className="group inline-flex items-center gap-2 rounded-xl border border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-5 py-3 text-sm font-semibold text-purple-700 transition-all hover:border-purple-300/50 hover:from-purple-500/20 hover:to-pink-500/20 hover:shadow-lg hover:shadow-purple-500/20 card-hover glass-card"
-              >
-                <Layers3 size={18} />
-                Compare Coins
-              </Link>
-              <Link
-                href="/methodology"
-                className="group inline-flex items-center gap-2 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-5 py-3 text-sm font-semibold text-cyan-700 transition-all hover:border-cyan-300/50 hover:from-cyan-500/20 hover:to-blue-500/20 hover:shadow-lg hover:shadow-cyan-500/20 card-hover glass-card"
-              >
-                <BookOpen size={18} />
-                Methodology Guide
-              </Link>
-            </div>
-          </div>
-        </header>
+    <AppShell
+      onRefresh={() => setRefreshKey((value) => value + 1)}
+      isRefreshing={isLoading}
+      globalMarketData={macroData?.sourceAvailable ? {
+        totalMarketCap: macroData.totalMarketCap,
+        marketCapChange24h: macroData.marketCapChange24h,
+        btcDominance: macroData.btcDominance,
+        fearGreed: macroData.fearGreedValue,
+      } : undefined}
+    >
+      {/* Disclaimer Banner */}
+      <div className="mb-6 flex items-start gap-3 rounded-lg border border-[var(--warning)]/20 bg-[var(--warning)]/5 p-4 text-sm text-[var(--warning)]">
+        <ShieldAlert className="mt-0.5 shrink-0" size={16} />
+        <div>
+          <p className="font-medium">Research Only — Not Financial Advice</p>
+          <p className="mt-1 text-[var(--text-muted)]">
+            This tool provides market context and analytical insights. It does not provide trading signals or investment recommendations.
+          </p>
+        </div>
+      </div>
 
-        {/* Disclaimer Banner */}
-        <div className="mb-8 flex items-start gap-3 rounded-2xl border border-orange-400/20 bg-gradient-to-r from-orange-500/5 to-amber-500/5 p-5 text-sm leading-6 text-orange-800 glass-card glow-orange">
-          <ShieldAlert className="mt-0.5 shrink-0 text-orange-600" size={20} />
+      {/* Asset Selection Panel */}
+      <section className="mb-6 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-1)] p-5">
+        <div className="mb-4 flex items-center justify-between">
           <div>
-            <p className="font-semibold text-orange-700">Important Disclaimer</p>
-            <p className="mt-1 text-orange-600/80">
-              This is a research assistant tool only, not financial advice. All outputs provide market context
-              and analytical insights — they are not standalone trading signals or investment recommendations.
+            <h2 className="text-base font-semibold text-[var(--text-primary)]">Select Asset</h2>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
+              Load one asset at a time for reliable data fetching.
             </p>
           </div>
+          <button
+            type="button"
+            onClick={() => setRefreshKey((value) => value + 1)}
+            disabled={isLoading}
+            className="btn-secondary"
+          >
+            <LoaderCircle className={`${isLoading ? 'animate-spin' : ''}`} size={16} />
+            Refresh
+          </button>
         </div>
-
-        {/* Asset Selection Panel */}
-        <section className="mb-8 rounded-2xl border border-white/50 bg-gradient-to-br from-white/80 to-white/40 p-5 sm:p-6 glow-blue backdrop-blur-xl glass-card">
-          <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Target className="text-cyan-600" size={18} />
-                <p className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-600">
-                  Research Universe
-                </p>
-              </div>
-              <h2 className="text-xl font-semibold text-slate-900">Select an Asset</h2>
-              <p className="mt-1 text-sm text-slate-600">
-                Load one asset at a time to keep external requests measured and reliable.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setRefreshKey((value) => value + 1)}
-              disabled={isLoading}
-              className="group shrink-0 inline-flex items-center gap-2 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-5 py-2.5 text-sm font-semibold text-cyan-700 transition-all hover:border-cyan-300/50 hover:from-cyan-500/20 hover:to-blue-500/20 hover:shadow-lg hover:shadow-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-50 card-hover glass-card"
-            >
-              <LoaderCircle className={`transition-transform ${isLoading ? 'animate-spin' : ''}`} size={18} />
-              Refresh Data
-            </button>
-          </div>
-          <CoinSelector
-            coins={allCoins}
-            selectedCoinId={coin.coinId}
-            onSelectCoin={(nextCoinId) => {
-              if (nextCoinId !== coin.coinId) {
+        
+        {/* Simplified Asset Selector - Searchable dropdown */}
+        <div className="relative">
+          <select
+            value={coin.coinId}
+            onChange={(e) => {
+              if (e.target.value !== coin.coinId) {
                 setOnchainData(null);
                 setIsOnchainLoading(true);
-                setSelectedCoinId(nextCoinId);
+                setSelectedCoinId(e.target.value);
               }
             }}
-            onRemoveCoin={handleRemoveCustomCoin}
-          />
-          <div className="mt-6 border-t border-white/40 pt-5">
-            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <PlusCircle className="text-emerald-600" size={16} />
-              Add Custom Coin
-            </h3>
-            <p className="mt-1 text-xs leading-5 text-slate-600">
-              Use the CoinGecko coin ID, not ticker symbol. For example: chainlink,
-              aave, or render-token.
-            </p>
-            <form
-              onSubmit={handleAddCustomCoin}
-              className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start"
+            className="asset-selector-input w-full sm:w-auto sm:min-w-[280px]"
+          >
+            {allCoins.map((c) => (
+              <option key={c.coinId} value={c.coinId}>
+                {c.symbol.toUpperCase()} - {c.name} {c.isCustom ? '(Custom)' : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        <div className="mt-5 border-t border-[var(--border-subtle)] pt-5">
+          <h3 className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
+            <PlusCircle size={16} className="text-[var(--accent)]" />
+            Add Custom Asset
+          </h3>
+          <p className="mt-1 text-xs text-[var(--text-muted)]">
+            Use the CoinGecko ID (e.g., chainlink, aave, render-token).
+          </p>
+          <form
+            onSubmit={handleAddCustomCoin}
+            className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start"
+          >
+            <label htmlFor="custom-coin-id" className="sr-only">
+              CoinGecko coin ID
+            </label>
+            <input
+              id="custom-coin-id"
+              type="text"
+              value={customCoinInput}
+              onChange={(event) => setCustomCoinInput(event.target.value)}
+              placeholder="chainlink"
+              disabled={isAddingCoin}
+              className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-2)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] sm:max-w-xs disabled:cursor-not-allowed disabled:opacity-60"
+            />
+            <button
+              type="submit"
+              disabled={isAddingCoin}
+              className="btn-secondary"
             >
-              <label htmlFor="custom-coin-id" className="sr-only">
-                CoinGecko coin ID
-              </label>
-              <input
-                id="custom-coin-id"
-                type="text"
-                value={customCoinInput}
-                onChange={(event) => setCustomCoinInput(event.target.value)}
-                placeholder="chainlink"
-                disabled={isAddingCoin}
-                className="w-full rounded-xl border border-white/50 bg-white/60 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 sm:max-w-xs disabled:cursor-not-allowed disabled:opacity-60 glass-panel"
-              />
-              <button
-                type="submit"
-                disabled={isAddingCoin}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-5 py-2.5 text-sm font-semibold text-cyan-700 transition-all hover:border-cyan-300/50 hover:from-cyan-500/20 hover:to-blue-500/20 hover:shadow-lg hover:shadow-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-60 card-hover glass-card"
-              >
-                {isAddingCoin && <LoaderCircle className="animate-spin" size={16} />}
-                {isAddingCoin ? "Checking..." : "Add Coin"}
-              </button>
-            </form>
-            {customCoinMessage && (
-              <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700">
-                <CheckCircle size={16} />
-                {customCoinMessage}
-              </p>
-            )}
-            {customCoinError && (
-              <p className="mt-3 flex items-center gap-2 text-sm text-rose-700">
-                <AlertCircle size={16} />
-                {customCoinError}
-              </p>
-            )}
-          </div>
-        </section>
+              {isAddingCoin && <LoaderCircle className="animate-spin" size={14} />}
+              {isAddingCoin ? "Checking..." : "Add Asset"}
+            </button>
+          </form>
+          {customCoinMessage && (
+            <p className="mt-3 flex items-center gap-2 text-sm text-[var(--positive)]">
+              <CheckCircle size={14} />
+              {customCoinMessage}
+            </p>
+          )}
+          {customCoinError && (
+            <p className="mt-3 flex items-center gap-2 text-sm text-[var(--negative)]">
+              <AlertCircle size={14} />
+              {customCoinError}
+            </p>
+          )}
+        </div>
+      </section>
 
-        {/* Dashboard Grid - Main Content */}
-        <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
+      {/* Dashboard Grid - Main Content */}
+      <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
           {/* Loading States */}
           {isLoading && !marketData && (
-            <section className="flex min-h-52 items-center justify-center gap-3 rounded-2xl border border-white/50 bg-gradient-to-br from-white/80 to-white/40 p-5 text-slate-600 lg:col-span-2 backdrop-blur-xl glass-card">
-              <LoaderCircle className="animate-spin text-cyan-600" size={20} />
-              <span>Loading live market data for <span className="font-semibold text-cyan-700">{coin.name}</span>...</span>
+            <section className="flex min-h-48 items-center justify-center gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-1)] p-6 text-[var(--text-secondary)] lg:col-span-2">
+              <LoaderCircle className="animate-spin text-[var(--accent)]" size={18} />
+              <span>Loading market data for <span className="font-medium text-[var(--text-primary)]">{coin.name}</span>...</span>
             </section>
           )}
 
           {isLoading && marketData && (
-            <section className="flex items-center gap-3 rounded-2xl border border-cyan-400/20 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 p-4 text-sm text-slate-600 lg:col-span-2 backdrop-blur-xl glass-card">
-              <LoaderCircle className="animate-spin text-cyan-600" size={18} />
-              Refreshing {coin.name} market data. Last successful result remains visible.
+            <section className="flex items-center gap-3 rounded-lg border border-[var(--accent)]/20 bg-[var(--accent)]/5 p-4 text-sm text-[var(--text-secondary)] lg:col-span-2">
+              <LoaderCircle className="animate-spin text-[var(--accent)]" size={16} />
+              Refreshing {coin.name} data. Last successful result shown.
             </section>
           )}
 
           {warning && !isLoading && (
-            <section className="flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-4 text-sm text-amber-800 lg:col-span-2 backdrop-blur-xl glass-card">
-              <TriangleAlert className="mt-0.5 shrink-0 text-amber-600" size={18} />
+            <section className="flex items-start gap-3 rounded-lg border border-[var(--warning)]/20 bg-[var(--warning)]/5 p-4 text-sm text-[var(--warning)] lg:col-span-2">
+              <TriangleAlert className="mt-0.5 shrink-0" size={16} />
               <div>
-                <p className="font-medium text-amber-700">Using cached market context</p>
-                <p className="mt-1 text-amber-600/80">{warning}</p>
+                <p className="font-medium">Using cached market data</p>
+                <p className="mt-1 text-[var(--text-muted)]">{warning}</p>
               </div>
             </section>
           )}
 
           {error && !isLoading && (
-            <section className="flex flex-col items-start gap-4 rounded-2xl border border-rose-400/20 bg-gradient-to-r from-rose-500/5 to-orange-500/5 p-5 lg:col-span-2 sm:flex-row sm:items-center backdrop-blur-xl glass-card">
-              <TriangleAlert className="text-rose-600" size={24} />
-              <div className="flex-1 space-y-1 text-sm text-slate-600">
-                <p className="font-medium text-rose-700">Market data update unavailable</p>
+            <section className="flex flex-col items-start gap-4 rounded-lg border border-[var(--negative)]/20 bg-[var(--negative)]/5 p-5 lg:col-span-2 sm:flex-row sm:items-center">
+              <TriangleAlert className="text-[var(--negative)]" size={20} />
+              <div className="flex-1 space-y-1 text-sm text-[var(--text-secondary)]">
+                <p className="font-medium text-[var(--negative)]">Market data unavailable</p>
                 <p>
-                  Market data failed to load. Status: {error.status || "Network"}. Reason:{" "}
-                  {error.detail}
+                  Status: {error.status || "Network"}. Reason: {error.detail}
                 </p>
                 {marketData && (
-                  <p className="text-slate-500">
-                    Showing the last successfully loaded market data below.
+                  <p className="text-[var(--text-muted)]">
+                    Showing last successfully loaded data.
                   </p>
                 )}
               </div>
               <button
                 type="button"
                 onClick={() => setRefreshKey((value) => value + 1)}
-                className="rounded-xl border border-white/50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 glass-card card-hover"
+                className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-2)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]"
               >
-                Try again
+                Retry
               </button>
             </section>
           )}
@@ -820,41 +765,6 @@ export default function Home() {
             />
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="mt-12 border-t border-white/40 pt-8 text-center">
-          <div className="flex flex-wrap justify-center gap-4 mb-4 text-xs text-slate-500">
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              CoinGecko
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-              DeFiLlama
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-              Alternative.me
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
-              GDELT
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-pink-500" />
-              Coin Metrics
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-500" />
-              Gemini AI
-            </span>
-          </div>
-          <p className="text-xs leading-6 text-slate-500">
-            Research assistant tool only. All data is for informational purposes and should not be 
-            considered as financial advice or investment recommendations.
-          </p>
-        </footer>
-      </div>
-    </main>
+    </AppShell>
   );
 }

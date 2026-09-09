@@ -66,21 +66,27 @@ function ScoreMetric({
   value: number;
   maximum: number;
 }) {
+  const percentage = (value / maximum) * 100;
+  let barClass = "score-bar-accent";
+  if (percentage >= 70) barClass = "score-bar-positive";
+  else if (percentage >= 40) barClass = "score-bar-neutral";
+  else barClass = "score-bar-negative";
+
   return (
-    <div className="rounded-xl border border-white/50 bg-white/60 p-3 glass-card">
+    <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-2)] p-3">
       <div className="mb-2 flex items-center justify-between text-sm">
-        <span className="font-medium text-slate-800">{label}</span>
-        <span className="text-slate-600">
+        <span className="font-medium text-[var(--text-secondary)]">{label}</span>
+        <span className="text-[var(--text-muted)] font-mono-tabular">
           {value}/{maximum}
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+      <div className="score-bar-container">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
-          style={{ width: `${(value / maximum) * 100}%` }}
+          className={`score-bar-fill ${barClass}`}
+          style={{ width: `${percentage}%` }}
         />
       </div>
-      <p className="mt-2 text-xs leading-5 text-slate-500">{description}</p>
+      <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">{description}</p>
     </div>
   );
 }
@@ -160,56 +166,56 @@ export default function ScoreCard({ score, realizedVolatility }: ScoreCardProps)
   ];
 
   return (
-    <section className="rounded-2xl border border-white/50 bg-gradient-to-br from-white/80 to-white/40 p-5 shadow-xl shadow-black/5 sm:p-6 card-hover backdrop-blur-xl glass-card">
+    <section className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-1)] p-5">
       <div className="mb-5 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Gauge className="text-purple-600" size={18} />
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-purple-600">
+            <Gauge size={18} />
+            <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
               Research Score v2
             </p>
           </div>
-          <h2 className="mt-2 text-xl font-semibold text-slate-900">Market Score + Context Score</h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <h2 className="mt-1 text-base font-semibold text-[var(--text-primary)]">Market Score + Context Score</h2>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             Separates direct market structure from broader research context.
           </p>
         </div>
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center icon-container">
-          <Gauge className="text-purple-600" size={24} />
+        <div className="h-10 w-10 rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] flex items-center justify-center">
+          <Gauge size={20} />
         </div>
       </div>
 
       {/* Composite View Card */}
-      <div className="mb-6 rounded-xl border border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5 backdrop-blur-xl glass-card">
+      <div className="mb-5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-2)] p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Layers3 className="text-purple-600" size={20} />
-            <p className="text-sm font-bold text-slate-800">Composite Research View</p>
+            <Layers3 size={18} />
+            <p className="text-sm font-medium text-[var(--text-primary)]">Composite Research View</p>
           </div>
           <span
-            className={`rounded-full border px-3 py-1.5 text-xs font-bold ${getCompositeStyle(
+            className={`rounded-full border px-3 py-1 text-xs font-medium ${getCompositeStyle(
               score.compositeView.label,
             )}`}
           >
             {score.compositeView.label}
           </span>
         </div>
-        <p className="text-sm leading-6 text-slate-700">{score.compositeView.explanation}</p>
+        <p className="text-sm leading-6 text-[var(--text-secondary)]">{score.compositeView.explanation}</p>
       </div>
 
       <div className="grid gap-5 xl:grid-cols-2">
         {/* Market Score Panel */}
-        <div className="rounded-2xl border border-white/50 bg-gradient-to-br from-white/70 to-white/30 p-5 backdrop-blur-xl glass-card">
-          <div className="mb-5 flex items-center justify-between rounded-xl bg-gradient-to-r from-white/80 to-white/50 p-5 border border-white/60 glass-card">
+        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-1)] p-4">
+          <div className="mb-4 flex items-center justify-between rounded-lg bg-[var(--bg-surface-2)] p-4 border border-[var(--border-subtle)]">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Market Score</p>
-              <p className="mt-1 text-4xl font-bold text-slate-900">
+              <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Market Score</p>
+              <p className="mt-1 text-3xl font-bold text-[var(--text-primary)]">
                 {score.marketScore.totalScore}
-                <span className="text-lg font-medium text-slate-500">/100</span>
+                <span className="text-base font-medium text-[var(--text-muted)]">/100</span>
               </p>
             </div>
             <p
-              className={`rounded-full border px-4 py-2 text-sm font-bold ${getMarketVerdictStyle(
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium ${getMarketVerdictStyle(
                 score.marketScore.verdict,
               )}`}
             >
@@ -224,17 +230,17 @@ export default function ScoreCard({ score, realizedVolatility }: ScoreCardProps)
           </div>
 
           {/* Volatility Box */}
-          <div className="mt-5 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-4 backdrop-blur-xl glass-card">
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">30D Realized Volatility (Annualized)</p>
-            <p className="mt-2 text-xl font-bold text-cyan-700">
+          <div className="mt-4 rounded-lg border border-[var(--accent)]/20 bg-[var(--accent)]/5 p-3">
+            <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">30D Realized Volatility (Annualized)</p>
+            <p className="mt-1 text-lg font-bold text-[var(--accent)]">
               {realizedVolatility === null ? "Unavailable" : `${realizedVolatility.toFixed(2)}%`}
             </p>
           </div>
 
           {/* Market Notes */}
-          <div className="mt-5 rounded-xl border border-white/50 bg-white/60 p-4 backdrop-blur-xl glass-card">
-            <h3 className="mb-3 text-sm font-bold text-slate-800 flex items-center gap-2">
-              <FileText size={16} className="text-slate-500" />
+          <div className="mt-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-2)] p-3">
+            <h3 className="mb-2 text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
+              <FileText size={14} />
               Market Notes
             </h3>
             <NotesList notes={score.marketScore.notes} />
@@ -242,17 +248,17 @@ export default function ScoreCard({ score, realizedVolatility }: ScoreCardProps)
         </div>
 
         {/* Context Score Panel */}
-        <div className="rounded-2xl border border-white/50 bg-gradient-to-br from-white/70 to-white/30 p-5 backdrop-blur-xl glass-card">
-          <div className="mb-5 flex items-center justify-between rounded-xl bg-gradient-to-r from-white/80 to-white/50 p-5 border border-white/60 glass-card">
+        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-1)] p-4">
+          <div className="mb-4 flex items-center justify-between rounded-lg bg-[var(--bg-surface-2)] p-4 border border-[var(--border-subtle)]">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Context Score</p>
-              <p className="mt-1 text-4xl font-bold text-slate-900">
+              <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Context Score</p>
+              <p className="mt-1 text-3xl font-bold text-[var(--text-primary)]">
                 {score.contextScore.totalScore}
-                <span className="text-lg font-medium text-slate-500">/100</span>
+                <span className="text-base font-medium text-[var(--text-muted)]">/100</span>
               </p>
             </div>
             <p
-              className={`rounded-full border px-4 py-2 text-sm font-bold ${getContextVerdictStyle(
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium ${getContextVerdictStyle(
                 score.contextScore.verdict,
               )}`}
             >
@@ -267,9 +273,9 @@ export default function ScoreCard({ score, realizedVolatility }: ScoreCardProps)
           </div>
 
           {/* Context Notes */}
-          <div className="mt-5 rounded-xl border border-white/50 bg-white/60 p-4 backdrop-blur-xl glass-card">
-            <h3 className="mb-3 text-sm font-bold text-slate-800 flex items-center gap-2">
-              <FileText size={16} className="text-slate-500" />
+          <div className="mt-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface-2)] p-3">
+            <h3 className="mb-2 text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
+              <FileText size={14} />
               Context Notes
             </h3>
             <NotesList notes={score.contextScore.notes} />
@@ -277,8 +283,8 @@ export default function ScoreCard({ score, realizedVolatility }: ScoreCardProps)
         </div>
       </div>
 
-      <p className="mt-5 flex items-start gap-2 rounded-xl border border-amber-400/30 bg-amber-500/10 p-4 text-xs font-medium text-amber-700 glass-card">
-        <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+      <p className="mt-5 flex items-start gap-2 rounded-lg border border-[var(--warning)]/20 bg-[var(--warning)]/5 p-3 text-xs font-medium text-[var(--warning)]">
+        <AlertTriangle size={14} className="mt-0.5 shrink-0" />
         Scores are simplified research aids only. They are not financial advice, price predictions, or buy/sell signals.
       </p>
     </section>
