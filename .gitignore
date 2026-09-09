@@ -1,19 +1,60 @@
-# dependencies
+```
+# Dependencies
 node_modules/
 
-# next.js output
-.next/
-out/
-dist/
-
-# local files
-.DS_Store
-*.log
+# Environment variables
 .env
 .env.local
-.env*.local
-!.env.example
+.env.*
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+*.tmp
+
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+```

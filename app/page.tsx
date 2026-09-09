@@ -2,7 +2,7 @@
 
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { LoaderCircle, ShieldAlert, TriangleAlert } from "lucide-react";
+import { LoaderCircle, ShieldAlert, TriangleAlert, BrainCircuit, Layers3, BookOpen, Target, PlusCircle, CheckCircle, AlertCircle } from "lucide-react";
 import AiSummary from "@/components/AiSummary";
 import CoinSelector from "@/components/CoinSelector";
 import DefiFundamentals from "@/components/DefiFundamentals";
@@ -564,61 +564,96 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#12253a_0%,_#070b14_43%)] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8 border-b border-slate-800/80 pb-8">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-cyan-400">
-            Research Workspace
-          </p>
-          <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-5xl">
-            Crypto AI Research Dashboard
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
-            Review live market context, macro sentiment, headline context, on-chain
-            valuation, realized volatility, technical scenarios, DeFi fundamentals,
-            and on-demand structured AI summaries in one focused workspace.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2 text-xs font-medium text-slate-400">
-            {["CoinGecko market data", "DeFiLlama TVL context", "Technical scenario context", "Macro sentiment backdrop", "GDELT headline context", "Coin Metrics MVRV context", "Gemini structured summary"].map(
-              (source) => (
-                <span key={source} className="rounded-full border border-slate-800 bg-slate-900/70 px-3 py-1.5">
-                  {source}
-                </span>
-              ),
-            )}
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/compare"
-              className="inline-flex rounded-xl border border-violet-400/20 bg-violet-400/5 px-4 py-2 text-sm font-semibold text-violet-200 transition hover:border-violet-300/40 hover:bg-violet-400/10"
-            >
-              Compare Coins
-            </Link>
-            <Link
-              href="/methodology"
-              className="inline-flex rounded-xl border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-300/40 hover:bg-cyan-400/10"
-            >
-              Methodology &amp; User Guide
-            </Link>
+    <main className="min-h-screen bg-gradient-to-b from-[#f5f7fa] via-[#e4e8ec] to-[#d9dee3] px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <div className="mx-auto max-w-[1600px]">
+        {/* Header Section */}
+        <header className="mb-10 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 blur-3xl -z-10" />
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-8 border-b border-white/40">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30 icon-container">
+                  <BrainCircuit className="text-white" size={24} />
+                </div>
+                <p className="text-sm font-bold uppercase tracking-[0.3em] gradient-text-cyan">
+                  Research Workspace
+                </p>
+              </div>
+              <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                <span className="gradient-text">Crypto AI Research</span>
+                <br />
+                <span className="text-slate-700">Dashboard</span>
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
+                Professional-grade market intelligence platform combining live data, 
+                on-chain analytics, sentiment analysis, and AI-powered insights.
+              </p>
+              
+              {/* Data Sources Pills */}
+              <div className="mt-6 flex flex-wrap gap-2">
+                {[
+                  { name: "CoinGecko", color: "from-emerald-500 to-teal-500" },
+                  { name: "DeFiLlama", color: "from-blue-500 to-indigo-500" },
+                  { name: "Alternative.me", color: "from-purple-500 to-violet-500" },
+                  { name: "GDELT", color: "from-orange-500 to-amber-500" },
+                  { name: "Coin Metrics", color: "from-pink-500 to-rose-500" },
+                  { name: "Gemini AI", color: "from-cyan-500 to-blue-500" },
+                ].map((source) => (
+                  <span 
+                    key={source.name} 
+                    className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r ${source.color} bg-opacity-10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md shadow-md`}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
+                    {source.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3 lg:flex-col">
+              <Link
+                href="/compare"
+                className="group inline-flex items-center gap-2 rounded-xl border border-purple-400/30 bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-5 py-3 text-sm font-semibold text-purple-700 transition-all hover:border-purple-300/50 hover:from-purple-500/20 hover:to-pink-500/20 hover:shadow-lg hover:shadow-purple-500/20 card-hover glass-card"
+              >
+                <Layers3 size={18} />
+                Compare Coins
+              </Link>
+              <Link
+                href="/methodology"
+                className="group inline-flex items-center gap-2 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-5 py-3 text-sm font-semibold text-cyan-700 transition-all hover:border-cyan-300/50 hover:from-cyan-500/20 hover:to-blue-500/20 hover:shadow-lg hover:shadow-cyan-500/20 card-hover glass-card"
+              >
+                <BookOpen size={18} />
+                Methodology Guide
+              </Link>
+            </div>
           </div>
         </header>
 
-        <div className="mb-7 flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-4 text-sm leading-6 text-amber-100">
-          <ShieldAlert className="mt-0.5 shrink-0 text-amber-300" size={18} />
-          <p>
-            Research assistant only, not financial advice. Outputs provide market context
-            and are not a standalone trading signal.
-          </p>
+        {/* Disclaimer Banner */}
+        <div className="mb-8 flex items-start gap-3 rounded-2xl border border-orange-400/20 bg-gradient-to-r from-orange-500/5 to-amber-500/5 p-5 text-sm leading-6 text-orange-800 glass-card glow-orange">
+          <ShieldAlert className="mt-0.5 shrink-0 text-orange-600" size={20} />
+          <div>
+            <p className="font-semibold text-orange-700">Important Disclaimer</p>
+            <p className="mt-1 text-orange-600/80">
+              This is a research assistant tool only, not financial advice. All outputs provide market context
+              and analytical insights — they are not standalone trading signals or investment recommendations.
+            </p>
+          </div>
         </div>
 
-        <section className="mb-7 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 sm:p-6">
+        {/* Asset Selection Panel */}
+        <section className="mb-8 rounded-2xl border border-white/50 bg-gradient-to-br from-white/80 to-white/40 p-5 sm:p-6 glow-blue backdrop-blur-xl glass-card">
           <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                Research Universe
-              </p>
-              <h2 className="mt-2 text-lg font-semibold text-white">Select an asset</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="text-cyan-600" size={18} />
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-600">
+                  Research Universe
+                </p>
+              </div>
+              <h2 className="text-xl font-semibold text-slate-900">Select an Asset</h2>
+              <p className="mt-1 text-sm text-slate-600">
                 Load one asset at a time to keep external requests measured and reliable.
               </p>
             </div>
@@ -626,9 +661,10 @@ export default function Home() {
               type="button"
               onClick={() => setRefreshKey((value) => value + 1)}
               disabled={isLoading}
-              className="shrink-0 rounded-xl border border-slate-700 bg-slate-950/30 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-400 hover:text-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
+              className="group shrink-0 inline-flex items-center gap-2 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-5 py-2.5 text-sm font-semibold text-cyan-700 transition-all hover:border-cyan-300/50 hover:from-cyan-500/20 hover:to-blue-500/20 hover:shadow-lg hover:shadow-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-50 card-hover glass-card"
             >
-              Refresh market data
+              <LoaderCircle className={`transition-transform ${isLoading ? 'animate-spin' : ''}`} size={18} />
+              Refresh Data
             </button>
           </div>
           <CoinSelector
@@ -643,9 +679,12 @@ export default function Home() {
             }}
             onRemoveCoin={handleRemoveCustomCoin}
           />
-          <div className="mt-6 border-t border-slate-800 pt-5">
-            <h3 className="text-sm font-semibold text-slate-100">Add custom coin</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-400">
+          <div className="mt-6 border-t border-white/40 pt-5">
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <PlusCircle className="text-emerald-600" size={16} />
+              Add Custom Coin
+            </h3>
+            <p className="mt-1 text-xs leading-5 text-slate-600">
               Use the CoinGecko coin ID, not ticker symbol. For example: chainlink,
               aave, or render-token.
             </p>
@@ -663,62 +702,70 @@ export default function Home() {
                 onChange={(event) => setCustomCoinInput(event.target.value)}
                 placeholder="chainlink"
                 disabled={isAddingCoin}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950/50 px-4 py-2.5 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-cyan-400 sm:max-w-xs disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-xl border border-white/50 bg-white/60 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 sm:max-w-xs disabled:cursor-not-allowed disabled:opacity-60 glass-panel"
               />
               <button
                 type="submit"
                 disabled={isAddingCoin}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-400/15 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-5 py-2.5 text-sm font-semibold text-cyan-700 transition-all hover:border-cyan-300/50 hover:from-cyan-500/20 hover:to-blue-500/20 hover:shadow-lg hover:shadow-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-60 card-hover glass-card"
               >
                 {isAddingCoin && <LoaderCircle className="animate-spin" size={16} />}
                 {isAddingCoin ? "Checking..." : "Add Coin"}
               </button>
             </form>
             {customCoinMessage && (
-              <p className="mt-3 text-sm text-emerald-300">{customCoinMessage}</p>
+              <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700">
+                <CheckCircle size={16} />
+                {customCoinMessage}
+              </p>
             )}
             {customCoinError && (
-              <p className="mt-3 text-sm text-rose-300">{customCoinError}</p>
+              <p className="mt-3 flex items-center gap-2 text-sm text-rose-700">
+                <AlertCircle size={16} />
+                {customCoinError}
+              </p>
             )}
           </div>
         </section>
 
+        {/* Dashboard Grid - Main Content */}
         <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
+          {/* Loading States */}
           {isLoading && !marketData && (
-            <section className="flex min-h-52 items-center justify-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-5 text-slate-300 lg:col-span-2">
-              <LoaderCircle className="animate-spin text-cyan-300" size={20} />
-              Loading live CoinGecko market data for {coin.name}...
+            <section className="flex min-h-52 items-center justify-center gap-3 rounded-2xl border border-white/50 bg-gradient-to-br from-white/80 to-white/40 p-5 text-slate-600 lg:col-span-2 backdrop-blur-xl glass-card">
+              <LoaderCircle className="animate-spin text-cyan-600" size={20} />
+              <span>Loading live market data for <span className="font-semibold text-cyan-700">{coin.name}</span>...</span>
             </section>
           )}
 
           {isLoading && marketData && (
-            <section className="flex items-center gap-3 rounded-2xl border border-cyan-400/15 bg-cyan-400/5 p-4 text-sm text-slate-300 lg:col-span-2">
-              <LoaderCircle className="animate-spin text-cyan-300" size={18} />
-              Refreshing {coin.name} market data. The last successful result remains visible.
+            <section className="flex items-center gap-3 rounded-2xl border border-cyan-400/20 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 p-4 text-sm text-slate-600 lg:col-span-2 backdrop-blur-xl glass-card">
+              <LoaderCircle className="animate-spin text-cyan-600" size={18} />
+              Refreshing {coin.name} market data. Last successful result remains visible.
             </section>
           )}
 
           {warning && !isLoading && (
-            <section className="flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-4 text-sm text-amber-100 lg:col-span-2">
-              <TriangleAlert className="mt-0.5 shrink-0 text-amber-300" size={18} />
+            <section className="flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-4 text-sm text-amber-800 lg:col-span-2 backdrop-blur-xl glass-card">
+              <TriangleAlert className="mt-0.5 shrink-0 text-amber-600" size={18} />
               <div>
-                <p className="font-medium">Using cached market context</p>
-                <p className="mt-1 text-amber-100/80">{warning}</p>
+                <p className="font-medium text-amber-700">Using cached market context</p>
+                <p className="mt-1 text-amber-600/80">{warning}</p>
               </div>
             </section>
           )}
 
           {error && !isLoading && (
-            <section className="flex flex-col items-start gap-4 rounded-2xl border border-rose-400/20 bg-rose-400/5 p-5 lg:col-span-2 sm:flex-row sm:items-center">
-              <TriangleAlert className="text-rose-300" size={24} />
-              <div className="flex-1 space-y-1 text-sm text-slate-300">
-                <p className="font-medium text-rose-100">Market data update unavailable</p>
+            <section className="flex flex-col items-start gap-4 rounded-2xl border border-rose-400/20 bg-gradient-to-r from-rose-500/5 to-orange-500/5 p-5 lg:col-span-2 sm:flex-row sm:items-center backdrop-blur-xl glass-card">
+              <TriangleAlert className="text-rose-600" size={24} />
+              <div className="flex-1 space-y-1 text-sm text-slate-600">
+                <p className="font-medium text-rose-700">Market data update unavailable</p>
                 <p>
                   Market data failed to load. Status: {error.status || "Network"}. Reason:{" "}
                   {error.detail}
                 </p>
                 {marketData && (
-                  <p className="text-slate-400">
+                  <p className="text-slate-500">
                     Showing the last successfully loaded market data below.
                   </p>
                 )}
@@ -726,16 +773,14 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setRefreshKey((value) => value + 1)}
-                className="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-400 hover:text-cyan-300"
+                className="rounded-xl border border-white/50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 glass-card card-hover"
               >
                 Try again
               </button>
             </section>
           )}
 
-          <MacroSentimentPanel data={macroData} isLoading={isMacroLoading} />
-          <NewsSentimentPanel data={newsData} isLoading={isNewsLoading} />
-
+          {/* Main Dashboard Panels */}
           {marketData && researchScore && (
             <>
               <MarketSnapshot market={marketData.market} />
@@ -745,35 +790,69 @@ export default function Home() {
             </>
           )}
 
+          {/* Context Panels */}
+          <MacroSentimentPanel data={macroData} isLoading={isMacroLoading} />
+          <NewsSentimentPanel data={newsData} isLoading={isNewsLoading} />
           <DefiFundamentals data={defiData} isLoading={isDefiLoading} />
           <OnchainValuation data={onchainData} isLoading={isOnchainLoading} />
-          <AiSummary
-            coin={coin}
-            marketData={currentMarket}
-            scoring={currentMarket ? researchScore : null}
-            defiData={defiData}
-            macroData={macroData}
-            onchainData={onchainData}
-            newsData={newsData}
-            technicalOutlook={technicalOutlook}
-            realizedVolatility={currentMarket ? realizedVolatility : null}
-            canGenerate={Boolean(
-              currentMarket &&
-                researchScore &&
-                technicalOutlook &&
-                defiData &&
-                macroData &&
-                !isDefiLoading &&
-                !isMacroLoading,
-            )}
-          />
+          
+          {/* AI Summary Panel - Full Width */}
+          <div className="lg:col-span-2">
+            <AiSummary
+              coin={coin}
+              marketData={currentMarket}
+              scoring={currentMarket ? researchScore : null}
+              defiData={defiData}
+              macroData={macroData}
+              onchainData={onchainData}
+              newsData={newsData}
+              technicalOutlook={technicalOutlook}
+              realizedVolatility={currentMarket ? realizedVolatility : null}
+              canGenerate={Boolean(
+                currentMarket &&
+                  researchScore &&
+                  technicalOutlook &&
+                  defiData &&
+                  macroData &&
+                  !isDefiLoading &&
+                  !isMacroLoading,
+              )}
+            />
+          </div>
         </div>
 
-        <footer className="pt-10 text-center text-xs leading-6 text-slate-500">
-          Market and chart data from CoinGecko. DeFi TVL data from DeFiLlama.
-          Sentiment context from Alternative.me. Headlines from GDELT. MVRV context
-          from Coin Metrics. AI summaries generate on demand from available
-          structured data. Research assistant only.
+        {/* Footer */}
+        <footer className="mt-12 border-t border-white/40 pt-8 text-center">
+          <div className="flex flex-wrap justify-center gap-4 mb-4 text-xs text-slate-500">
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              CoinGecko
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              DeFiLlama
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+              Alternative.me
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+              GDELT
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-pink-500" />
+              Coin Metrics
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-500" />
+              Gemini AI
+            </span>
+          </div>
+          <p className="text-xs leading-6 text-slate-500">
+            Research assistant tool only. All data is for informational purposes and should not be 
+            considered as financial advice or investment recommendations.
+          </p>
         </footer>
       </div>
     </main>
