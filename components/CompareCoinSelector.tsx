@@ -14,13 +14,13 @@ export default function CompareCoinSelector({
   onToggleCoin,
 }: CompareCoinSelectorProps) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-6">
+    <section className="rounded-2xl border border-slate-300/40 bg-white/40 p-4 backdrop-blur-xl shadow-xl shadow-slate-200/30 sm:p-6">
       <div className="mb-4">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
           Compare Universe
         </p>
-        <h2 className="mt-2 text-lg font-semibold text-white">Select 2 to 5 assets</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <h2 className="mt-2 text-lg font-semibold text-slate-800">Select 2 to 5 assets</h2>
+        <p className="mt-1 text-sm text-slate-600">
           Compare mode only fetches data for selected assets to keep requests measured.
         </p>
       </div>
@@ -38,15 +38,15 @@ export default function CompareCoinSelector({
               type="button"
               onClick={() => onToggleCoin(coin.coinId)}
               disabled={isDisabled}
-              className={`rounded-xl border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-45 ${
+              className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-45 ${
                 isSelected
-                  ? "border-cyan-300 bg-cyan-400/15 text-cyan-100"
-                  : "border-slate-700 bg-slate-950/30 text-slate-300 hover:border-cyan-400 hover:text-cyan-200"
+                  ? "border-blue-400/50 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 shadow-lg shadow-blue-500/20 backdrop-blur-xl"
+                  : "border-slate-300/50 bg-white/50 text-slate-600 hover:border-blue-400/50 hover:bg-white/70 hover:text-blue-600 hover:shadow-md"
               }`}
               aria-pressed={isSelected}
             >
               {coin.symbol}
-              <span className="ml-1 text-xs font-normal text-slate-400">
+              <span className="ml-1 text-xs font-normal text-slate-500">
                 {coin.name}
               </span>
             </button>

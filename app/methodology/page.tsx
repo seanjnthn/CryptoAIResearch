@@ -75,20 +75,20 @@ function GuideCard({
 }: GuideCardProps) {
   return (
     <section
-      className={`rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-slate-950/20 sm:p-6 ${className}`}
+      className={`rounded-2xl border border-slate-300/40 bg-white/40 p-5 backdrop-blur-xl shadow-xl shadow-slate-200/30 sm:p-6 ${className}`}
     >
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-500">
             {label}
           </p>
-          <h2 className="mt-2 text-xl font-semibold text-slate-50">{title}</h2>
+          <h2 className="mt-2 text-xl font-semibold text-slate-800">{title}</h2>
         </div>
-        <span className="rounded-xl border border-cyan-400/15 bg-cyan-400/5 p-2.5 text-cyan-300">
+        <span className="rounded-xl border border-blue-400/30 bg-gradient-to-br from-blue-50/60 to-purple-50/60 p-2.5 text-blue-600 backdrop-blur-xl shadow-lg shadow-blue-500/10">
           {icon}
         </span>
       </div>
-      <p className="text-sm leading-7 text-slate-300">{description}</p>
+      <p className="text-sm leading-7 text-slate-700">{description}</p>
       {children}
     </section>
   );
@@ -96,10 +96,10 @@ function GuideCard({
 
 function BulletList({ items }: { items: string[] }) {
   return (
-    <ul className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+    <ul className="mt-5 space-y-3 text-sm leading-6 text-slate-700">
       {items.map((item) => (
         <li key={item} className="flex gap-3">
-          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
           <span>{item}</span>
         </li>
       ))}
@@ -109,32 +109,32 @@ function BulletList({ items }: { items: string[] }) {
 
 export default function MethodologyPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#12253a_0%,_#070b14_43%)] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+    <main className="min-h-screen bg-gradient-to-b from-[#f5f7fa] via-[#e8ecf1] to-[#d9dee3] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 transition hover:text-cyan-200"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-300/50 bg-white/40 px-4 py-2 text-sm font-medium text-slate-600 backdrop-blur-xl transition-all duration-300 hover:border-blue-400/50 hover:bg-white/60 hover:text-blue-600 hover:shadow-lg hover:shadow-blue-500/10"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
         </Link>
 
-        <header className="mb-8 mt-8 border-b border-slate-800/80 pb-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300">
+        <header className="mb-8 mt-8 border-b border-slate-300/40 pb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-500">
             Documentation
           </p>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
+          <h1 className="mt-4 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
             Methodology &amp; User Guide
           </h1>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-700">
             Learn what each part of the dashboard measures, how to interpret
             Research Score v2, and which limitations matter before using its
             output as market context.
           </p>
         </header>
 
-        <div className="mb-6 flex gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/5 p-4 text-sm leading-6 text-amber-100">
-          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />
+        <div className="mb-6 flex gap-3 rounded-2xl border border-amber-400/30 bg-amber-50/60 p-4 text-sm leading-6 text-amber-700 backdrop-blur-xl shadow-lg shadow-amber-500/5">
+          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
           <p>
             This dashboard is a research assistant, not a trading bot. It does
             not provide financial advice, price predictions, or a standalone
@@ -192,11 +192,11 @@ export default function MethodologyPage() {
             className="md:col-span-2"
           >
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-                <p className="text-sm font-semibold text-slate-100">
+              <div className="rounded-xl border border-slate-300/40 bg-gradient-to-br from-blue-50/40 to-purple-50/40 p-4 backdrop-blur-xl shadow-lg shadow-slate-200/20">
+                <p className="text-sm font-semibold text-slate-800">
                   Market Score
                 </p>
-                <p className="mt-2 text-xs leading-5 text-slate-400">
+                <p className="mt-2 text-xs leading-5 text-slate-600">
                   Measures price, liquidity, volatility, drawdown, and DeFi TVL
                   trend where available.
                 </p>
@@ -204,12 +204,12 @@ export default function MethodologyPage() {
                   {marketScoreCategories.map((category) => (
                     <div
                       key={category.name}
-                      className="rounded-lg border border-slate-800 bg-slate-900/70 p-3"
+                      className="rounded-lg border border-slate-300/40 bg-white/50 p-3 backdrop-blur-xl"
                     >
-                      <p className="text-sm font-semibold text-slate-100">
+                      <p className="text-sm font-semibold text-slate-800">
                         {category.name}
                       </p>
-                      <p className="mt-2 text-xs leading-5 text-slate-400">
+                      <p className="mt-2 text-xs leading-5 text-slate-600">
                         {category.explanation}
                       </p>
                     </div>
@@ -217,11 +217,11 @@ export default function MethodologyPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-                <p className="text-sm font-semibold text-slate-100">
+              <div className="rounded-xl border border-slate-300/40 bg-gradient-to-br from-cyan-50/40 to-blue-50/40 p-4 backdrop-blur-xl shadow-lg shadow-slate-200/20">
+                <p className="text-sm font-semibold text-slate-800">
                   Context Score
                 </p>
-                <p className="mt-2 text-xs leading-5 text-slate-400">
+                <p className="mt-2 text-xs leading-5 text-slate-600">
                   Measures broader conditions such as macro regime, Fear & Greed,
                   headline sentiment, and MVRV when available.
                 </p>
@@ -229,12 +229,12 @@ export default function MethodologyPage() {
                   {contextScoreCategories.map((category) => (
                     <div
                       key={category.name}
-                      className="rounded-lg border border-slate-800 bg-slate-900/70 p-3"
+                      className="rounded-lg border border-slate-300/40 bg-white/50 p-3 backdrop-blur-xl"
                     >
-                      <p className="text-sm font-semibold text-slate-100">
+                      <p className="text-sm font-semibold text-slate-800">
                         {category.name}
                       </p>
-                      <p className="mt-2 text-xs leading-5 text-slate-400">
+                      <p className="mt-2 text-xs leading-5 text-slate-600">
                         {category.explanation}
                       </p>
                     </div>
@@ -386,10 +386,10 @@ export default function MethodologyPage() {
           </GuideCard>
         </div>
 
-        <footer className="mt-8 border-t border-slate-800/80 pt-6">
+        <footer className="mt-8 border-t border-slate-300/40 pt-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-300/40 hover:bg-cyan-400/10"
+            className="inline-flex items-center gap-2 rounded-xl border border-blue-400/30 bg-gradient-to-r from-blue-50/60 to-purple-50/60 px-4 py-2 text-sm font-semibold text-blue-700 backdrop-blur-xl shadow-lg shadow-blue-500/10 transition-all duration-300 hover:border-blue-400/50 hover:shadow-xl hover:shadow-blue-500/20"
           >
             <ArrowLeft className="h-4 w-4" />
             Return to the Crypto AI Research Dashboard

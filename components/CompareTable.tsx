@@ -96,13 +96,13 @@ function Badge({ label }: { label: string | null }) {
 
 export default function CompareTable({ rows }: CompareTableProps) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 shadow-xl shadow-black/10 sm:p-6">
+    <section className="rounded-2xl border border-slate-300/40 bg-white/40 p-4 backdrop-blur-xl shadow-xl shadow-slate-200/30 sm:p-6">
       <div className="mb-5">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
           Side-by-Side Context
         </p>
-        <h2 className="mt-2 text-lg font-semibold text-white">Compare selected assets</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <h2 className="mt-2 text-lg font-semibold text-slate-800">Compare selected assets</h2>
+        <p className="mt-1 text-sm text-slate-600">
           Values that cannot be loaded are shown as N/A so one failed source does not
           break the whole comparison.
         </p>
@@ -111,7 +111,7 @@ export default function CompareTable({ rows }: CompareTableProps) {
       <div className="overflow-x-auto">
         <table className="min-w-[1180px] text-left text-sm">
           <thead>
-            <tr className="border-b border-slate-800 text-xs uppercase tracking-[0.18em] text-slate-500">
+            <tr className="border-b border-slate-300/40 text-xs uppercase tracking-[0.18em] text-slate-500">
               <th className="px-3 py-3">Coin</th>
               <th className="px-3 py-3">Price</th>
               <th className="px-3 py-3">24H %</th>
@@ -130,36 +130,36 @@ export default function CompareTable({ rows }: CompareTableProps) {
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.coin.coinId} className="border-b border-slate-800/70 last:border-0">
+              <tr key={row.coin.coinId} className="border-b border-slate-200/50 last:border-0">
                 <td className="px-3 py-4">
                   <div>
-                    <p className="font-semibold text-slate-100">{row.coin.symbol}</p>
+                    <p className="font-semibold text-slate-800">{row.coin.symbol}</p>
                     <p className="text-xs text-slate-500">{row.coin.name}</p>
                     {row.isLoading && (
-                      <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-cyan-300">
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-blue-600">
                         <LoaderCircle className="animate-spin" size={13} />
                         Loading
                       </p>
                     )}
                     {row.error && !row.isLoading && (
-                      <p className="mt-2 flex max-w-44 items-start gap-1.5 text-xs leading-5 text-amber-300">
+                      <p className="mt-2 flex max-w-44 items-start gap-1.5 text-xs leading-5 text-amber-600">
                         <TriangleAlert className="mt-0.5 shrink-0" size={13} />
                         {row.error}
                       </p>
                     )}
                   </div>
                 </td>
-                <td className="px-3 py-4 text-slate-300">{formatCurrency(row.price)}</td>
-                <td className="px-3 py-4 text-slate-300">{formatPercent(row.change24h)}</td>
-                <td className="px-3 py-4 text-slate-300">{formatPercent(row.change7d)}</td>
-                <td className="px-3 py-4 text-slate-300">{formatPercent(row.change30d)}</td>
-                <td className="px-3 py-4 text-slate-300">
+                <td className="px-3 py-4 text-slate-700">{formatCurrency(row.price)}</td>
+                <td className="px-3 py-4 text-slate-700">{formatPercent(row.change24h)}</td>
+                <td className="px-3 py-4 text-slate-700">{formatPercent(row.change7d)}</td>
+                <td className="px-3 py-4 text-slate-700">{formatPercent(row.change30d)}</td>
+                <td className="px-3 py-4 text-slate-700">
                   {formatRatio(row.volumeToMarketCap)}
                 </td>
-                <td className="px-3 py-4 text-slate-300">
+                <td className="px-3 py-4 text-slate-700">
                   {formatPercent(row.realizedVolatility)}
                 </td>
-                <td className="px-3 py-4 text-slate-300">
+                <td className="px-3 py-4 text-slate-700">
                   {formatPercent(row.tvlChange30d)}
                 </td>
                 <td className="px-3 py-4">
@@ -173,7 +173,7 @@ export default function CompareTable({ rows }: CompareTableProps) {
                 </td>
                 <td className="px-3 py-4">
                   <div className="space-y-1">
-                    <p className="font-semibold text-slate-100">
+                    <p className="font-semibold text-slate-800">
                       {row.marketScore === null ? "N/A" : `${row.marketScore}/100`}
                     </p>
                     <Badge label={row.marketVerdict} />
@@ -181,7 +181,7 @@ export default function CompareTable({ rows }: CompareTableProps) {
                 </td>
                 <td className="px-3 py-4">
                   <div className="space-y-1">
-                    <p className="font-semibold text-slate-100">
+                    <p className="font-semibold text-slate-800">
                       {row.contextScore === null ? "N/A" : `${row.contextScore}/100`}
                     </p>
                     <Badge label={row.contextVerdict} />
@@ -196,7 +196,7 @@ export default function CompareTable({ rows }: CompareTableProps) {
         </table>
       </div>
 
-      <p className="mt-5 text-xs font-medium text-amber-300">
+      <p className="mt-5 text-xs font-medium text-amber-600">
         Comparison mode is for research context only and is not a ranking or
         buy/sell signal.
       </p>

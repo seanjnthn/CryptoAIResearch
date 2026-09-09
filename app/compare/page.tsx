@@ -369,32 +369,32 @@ export default function ComparePage() {
   }, [coinStates, macroData, selectedCoins]);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#12253a_0%,_#070b14_43%)] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+    <main className="min-h-screen bg-gradient-to-b from-[#f5f7fa] via-[#e8ecf1] to-[#d9dee3] px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 transition hover:text-cyan-200"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-300/50 bg-white/40 px-4 py-2 text-sm font-medium text-slate-600 backdrop-blur-xl transition-all duration-300 hover:border-blue-400/50 hover:bg-white/60 hover:text-blue-600 hover:shadow-lg hover:shadow-blue-500/10"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
         </Link>
 
-        <header className="mb-8 mt-8 border-b border-slate-800/80 pb-8">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-cyan-400">
+        <header className="mb-8 mt-8 border-b border-slate-300/40 pb-8">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-blue-500">
             Compare Mode
           </p>
-          <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-5xl">
+          <h1 className="max-w-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
             Compare Coins
           </h1>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-400">
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
             Review selected assets side by side using the same market data,
             fundamentals, context panels, and Research Score v2 framework already used
             on the main dashboard.
           </p>
         </header>
 
-        <div className="mb-7 flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-4 text-sm leading-6 text-amber-100">
-          <ShieldAlert className="mt-0.5 shrink-0 text-amber-300" size={18} />
+        <div className="mb-7 flex items-start gap-3 rounded-2xl border border-amber-400/30 bg-amber-50/60 p-4 text-sm leading-6 text-amber-700 backdrop-blur-xl shadow-lg shadow-amber-500/5">
+          <ShieldAlert className="mt-0.5 shrink-0 text-amber-500" size={18} />
           <p>
             Comparison mode is for side-by-side research context only. It is not a
             ranking recommendation, price prediction, or standalone trading signal.
@@ -409,22 +409,22 @@ export default function ComparePage() {
           />
 
           {isMacroLoading && (
-            <section className="flex items-center gap-3 rounded-2xl border border-cyan-400/15 bg-cyan-400/5 p-4 text-sm text-slate-300">
-              <LoaderCircle className="animate-spin text-cyan-300" size={18} />
+            <section className="flex items-center gap-3 rounded-2xl border border-blue-400/30 bg-blue-50/60 p-4 text-sm text-slate-700 backdrop-blur-xl shadow-lg shadow-blue-500/5">
+              <LoaderCircle className="animate-spin text-blue-500" size={18} />
               Loading global macro context once for the comparison table.
             </section>
           )}
 
           <CompareTable rows={rows} />
 
-          <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <section className="rounded-2xl border border-slate-300/40 bg-white/40 p-5 backdrop-blur-xl shadow-xl shadow-slate-200/30">
             <div className="flex items-start gap-3">
-              <BarChart3 className="mt-1 shrink-0 text-cyan-300" size={20} />
+              <BarChart3 className="mt-1 shrink-0 text-blue-500" size={20} />
               <div>
-                <h2 className="text-sm font-semibold text-slate-100">
+                <h2 className="text-sm font-semibold text-slate-800">
                   How this page fetches data
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-slate-400">
+                <p className="mt-2 text-sm leading-6 text-slate-600">
                   Macro data is fetched once because it is global. Market, DeFi,
                   on-chain, and news context are fetched only for the selected assets.
                   If one asset fails, its row shows unavailable values while the other
