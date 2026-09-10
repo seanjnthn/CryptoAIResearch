@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { LoaderCircle, ShieldAlert, TriangleAlert, BrainCircuit, Layers3, BookOpen, Target, PlusCircle, CheckCircle, AlertCircle, Search } from "lucide-react";
+import { LoaderCircle, ShieldAlert, TriangleAlert, BrainCircuit, Layers3, BookOpen, Target, PlusCircle, CheckCircle, AlertCircle, Search, TrendingUp, Activity, Zap, Eye, Bookmark } from "lucide-react";
 import AiSummary from "@/components/AiSummary";
 import DefiFundamentals from "@/components/DefiFundamentals";
 import MacroSentimentPanel from "@/components/MacroSentimentPanel";
@@ -31,6 +31,7 @@ import type {
 } from "@/types/crypto";
 import AppShell from "@/components/ui/AppShell";
 import { DataCompleteness } from "@/components/ui/DataCompleteness";
+import AssetSelector from "@/components/ui/AssetSelector";
 
 function isMarketApiError(
   data: MarketApiResponse | MarketApiError,
@@ -82,6 +83,8 @@ export default function Home() {
   const latestDefiRequestId = useRef(0);
   const latestOnchainRequestId = useRef(0);
   const latestNewsRequestId = useRef(0);
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"overview" | "technical" | "onchain" | "defi" | "news" | "ai">("overview");
   const allCoins = useMemo(
     () => [...defaultWatchlist, ...customCoins],
     [customCoins],
@@ -203,6 +206,18 @@ export default function Home() {
     } finally {
       setHasLoadedCustomCoins(true);
     }
+
+    // Load watchlist from localStorage
+    try {
+      const savedWatchlist = JSON.parse(
+        window.localStorage.getItem("cryptoai_watchlist") ?? "[]",
+      ) as string[];
+      if (Array.isArray(savedWatchlist)) {
+        setWatchlist(savedWatchlist);
+      }
+    } catch {
+      // Ignore watchlist load errors
+    }
   }, []);
 
   useEffect(() => {
@@ -217,10 +232,22 @@ export default function Home() {
           customCoins.map(({ coinId, symbol, name }) => ({ coinId, symbol, name })),
         ),
       );
+      window.localStorage.setItem(
+        "cryptoai_watchlist",
+        JSON.stringify(watchlist),
+      );
     } catch {
       setCustomCoinError("Unable to save custom coins in this browser.");
     }
-  }, [customCoins, hasLoadedCustomCoins]);
+  }, [customCoins, hasLoadedCustomCoins, watchlist]);
+
+  const handleToggleWatchlist = (coinId: string) => {
+    setWatchlist((current) =>
+      current.includes(coinId)
+        ? current.filter((id) => id !== coinId)
+        : [...current, coinId]
+    );
+  };
 
   async function handleAddCustomCoin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
